@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: paraxis-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-paraxis_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-paraxis_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-paraxis_local_password}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init-pgvector.sql:/docker-entrypoint-initdb.d/01-init-pgvector.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-paraxis_user} -d ${POSTGRES_DB:-paraxis_dev}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - paraxis-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: paraxis-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--save", "60", "1"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+    networks:
+      - paraxis-network
+
+volumes:
+  postgres_data:
+    name: paraxis_postgres_data
+  redis_data:
+    name: paraxis_redis_data
+
+networks:
+  paraxis-network:
+    name: paraxis-network
+    driver: bridge

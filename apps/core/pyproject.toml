@@ -1,0 +1,20 @@
+[project]
+name = "paraxis-core"
+version = "0.1.0"
+description = "Paraxis AI Core Domain Platform (Django + DRF)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.1.0",
+    "djangorestframework>=3.15.0",
+    "django-cors-headers>=4.4.0",
+    "psycopg2-binary>=2.9.9",
+    "redis>=5.0.0",
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.8.0",
+    "pyjwt>=2.9.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"

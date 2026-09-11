@@ -1,0 +1,60 @@
+name: Paraxis AI CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  foundation-check:
+    name: Foundation & Documentation Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate Docker Compose Configuration
+        run: docker compose config
+
+      - name: Run Foundation Verification
+        run: python3 scripts/verify_foundation.py
+
+  core-check:
+    name: Core Service Scaffold Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Python Syntax & Compilation Check
+        run: |
+          python3 -m compileall apps/core
+          python3 -m compileall apps/intelligence
+
+  web-check:
+    name: Web Scaffold Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Inspect Package Manifest
+        run: |
+          node -e "const pkg = require('./apps/web/package.json'); console.log('Web package valid:', pkg.name, pkg.version);"
