@@ -52,6 +52,7 @@ Every Pull Request must include:
 4. **Documentation**: Updates to corresponding files in `docs/` (PRD, HLD, LLD, API specs).
 5. **Security Review**: Check for OWASP Top 10, prompt injection vectors, and tenant leakage risks.
 6. **No Regressions**: CI pipeline must pass cleanly with 0 linter errors and 0 failing tests.
+7. **Decoupled Visual Design**: Figma designs are strictly optional visual references. Missing or pending Figma mockups must never block a PR or feature implementation. Rely on documented product requirements, API contracts, and design system tokens.
 
 ---
 

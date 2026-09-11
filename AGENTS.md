@@ -70,6 +70,7 @@ When executing tasks in this repository, agents **MUST NEVER**:
 7. **Disable Tests or Weaken Assertions**: Never delete, skip, or weaken existing tests.
 8. **Expose Secrets**: Never commit real API keys, passwords, or credentials. Use `.env.example` placeholders.
 9. **Silently Change Public APIs**: Never modify existing API request/response contracts without versioning (`/api/v1/` vs `/api/v2/`).
+10. **Block Engineering on Figma**: Never refuse, pause, or delay implementation citing missing or unapproved Figma designs. Figma is strictly an optional visual reference; engineers must proceed immediately using documented product requirements, design tokens, and existing UI components.
 
 ---
 
@@ -83,6 +84,7 @@ When executing tasks in this repository, agents **MUST NEVER**:
 
 ### TypeScript & React (Web)
 - Target: TypeScript 5+, React 18+, Next.js 14+ (App Router).
+- Workflow: Follow the decoupled sequence: `Documentation -> Design System -> API Contracts -> Implementation`. Figma is strictly an optional visual reference, never a blocking prerequisite.
 - Components: Functional components with explicit prop types.
 - State & Data Fetching: TanStack Query for server state; React Hook Form + Zod for form validation.
 - Styling: Tailwind CSS with shadcn/ui primitives. Avoid ad-hoc inline styles.

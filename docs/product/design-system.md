@@ -1,6 +1,6 @@
 # Design System & UI Specification — Paraxis AI
 
-> **Purpose**: Design tokens, component aesthetics, layout principles, and Figma project architecture for Paraxis AI.  
+> **Purpose**: Design tokens, component aesthetics, layout principles, and engineering UI workflow for Paraxis AI.
 > **Visual Direction**: Premium, enterprise-grade, technical, restrained, trustworthy, information-dense, and modern. Avoids generic bright college ERP styling.
 
 ---
@@ -61,9 +61,37 @@ Paraxis AI is styled as an **institutional mission-control platform**:
 
 ---
 
-## 4. Recommended Figma Project Page Architecture
+## 4. Engineering Workflow & Figma Policy (Decoupled & Non-Blocking)
 
-When initiating visual design in Figma, organize the workspace according to these 13 dedicated pages:
+### 4.1 Guiding Principle
+```
+DOCUMENTATION + DESIGN SYSTEM + API CONTRACTS + IMPLEMENTATION
+(with Figma as an OPTIONAL visual reference)
+```
+
+### 4.2 Non-Negotiable Policy Invariants
+- **Figma is OPTIONAL for engineering execution**: Figma may exist and may be used as a visual reference/source of approved designs, but engineering must NEVER wait for Figma.
+- **No Blocking Dependencies**: A missing Figma design must NEVER block implementation. Developers must NOT be required to create a Figma design before implementing a feature.
+- **Figma is NOT the Source of Truth**: Figma must NOT be treated as the source of truth for architecture, APIs, backend behavior, domain logic, security, or product requirements.
+- **Authoritative Sources**: Product, architecture, and technical documentation alongside approved API contracts remain authoritative for engineering behavior. The design system tokens and reusable UI components remain authoritative for implementation consistency.
+- **Execution Rule**: If an approved Figma design exists, frontend engineers MAY use it as a visual reference. If no Figma design exists, frontend engineers MUST proceed immediately using documented product requirements, design tokens, component primitives, accessibility requirements, and established UI patterns. Figma can be updated later when useful, but this must never block delivery.
+
+### 4.3 Frontend Engineering Workflow
+When implementing frontend screens or components, follow this decoupled sequence:
+1. **Read Product Requirements**: Understand the problem, user journey, and functional acceptance criteria.
+2. **Read Architecture & API Documentation**: Understand endpoint contracts, error envelopes, and data schemas.
+3. **Check Design System & UI Components**: Review existing design tokens, status badges, cards, and shadcn primitives.
+4. **Check Figma (Optional)**: If an approved Figma design exists, implement the visual direction faithfully.
+5. **Proceed If Missing**: If no Figma design exists, proceed immediately without waiting.
+6. **Validate in Browser**: Verify responsiveness, loading, error, and empty states.
+7. **Maintain Consistency**: Keep implementation aligned with design system tokens and accessibility standards.
+8. **Optional Sync**: Optionally reflect useful visual patterns back into Figma at a later time.
+
+---
+
+## 5. Optional Reference Figma Workspace Architecture
+
+When visual designers or engineers choose to maintain or update an optional visual workspace in Figma, the following 13-page reference structure may be used:
 
 - **00 — Cover**: Project title, version, contributors, status.
 - **01 — Foundations**: Colors, typography, spacing, shadows, elevation, iconography.
@@ -77,4 +105,4 @@ When initiating visual design in Figma, organize the workspace according to thes
 - **09 — Safety & Trust**: Encrypted safety case review, whistleblower masking view, broadcast dispatch.
 - **10 — Agent Activity**: Live agent run inspector, tool execution telemetry, token/cost monitor.
 - **11 — Prototypes**: Interactive click-through prototypes for hackathon demo.
-- **12 — Developer Handoff**: Annotated redlines, token exports, asset exports.
+- **12 — Design Reference & Asset Exports (Optional)**: Design reference redlines and asset exports.
