@@ -99,25 +99,25 @@ REQUIRED_DOCS = [
 # 4. Required Application Scaffold Files
 REQUIRED_SCAFFOLD_FILES = [
     # Core
-    "apps/core/manage.py",
-    "apps/core/pyproject.toml",
-    "apps/core/requirements.txt",
-    "apps/core/config/settings.py",
-    "apps/core/config/urls.py",
-    "apps/core/core/views/health.py",
+    "backend/core/manage.py",
+    "backend/core/pyproject.toml",
+    "backend/core/requirements.txt",
+    "backend/core/config/settings.py",
+    "backend/core/config/urls.py",
+    "backend/core/core/views/health.py",
     # Intelligence
-    "apps/intelligence/pyproject.toml",
-    "apps/intelligence/requirements.txt",
-    "apps/intelligence/config.py",
-    "apps/intelligence/main.py",
-    "apps/intelligence/api/v1/health.py",
-    # Web
-    "apps/web/package.json",
-    "apps/web/tsconfig.json",
-    "apps/web/tailwind.config.js",
-    "apps/web/app/layout.tsx",
-    "apps/web/app/page.tsx",
-    "apps/web/app/api/health/route.ts",
+    "backend/intelligence/pyproject.toml",
+    "backend/intelligence/requirements.txt",
+    "backend/intelligence/config.py",
+    "backend/intelligence/main.py",
+    "backend/intelligence/api/v1/health.py",
+    # Frontend
+    "frontend/package.json",
+    "frontend/tsconfig.json",
+    "frontend/tailwind.config.js",
+    "frontend/app/layout.tsx",
+    "frontend/app/page.tsx",
+    "frontend/app/api/health/route.ts",
     # Infrastructure
     "infrastructure/postgres/init-pgvector.sql",
 ]
@@ -166,7 +166,7 @@ def check_adrs():
 
 
 def check_python_syntax():
-    py_files = list(ROOT_DIR.glob("apps/core/**/*.py")) + list(ROOT_DIR.glob("apps/intelligence/**/*.py"))
+    py_files = list(ROOT_DIR.glob("backend/core/**/*.py")) + list(ROOT_DIR.glob("backend/intelligence/**/*.py"))
     syntax_errors = []
     for py_file in py_files:
         try:

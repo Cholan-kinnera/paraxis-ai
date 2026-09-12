@@ -30,7 +30,7 @@ verify-foundation: ## Run foundation verification script (docs, dirs, ADRs, conf
 
 lint: ## Run linting across web, core, and intelligence
 	@echo "Checking formatting and syntax..."
-	@python3 -m py_compile apps/core/**/*.py apps/intelligence/**/*.py 2>/dev/null || true
+	@python3 -m py_compile backend/core/**/*.py backend/intelligence/**/*.py 2>/dev/null || true
 
 test: ## Run test suites across monorepo
 	@echo "Running tests..."

@@ -42,8 +42,8 @@ jobs:
           python-version: "3.12"
       - name: Python Syntax & Compilation Check
         run: |
-          python3 -m compileall apps/core
-          python3 -m compileall apps/intelligence
+          python3 -m compileall backend/core
+          python3 -m compileall backend/intelligence
 
   web-check:
     name: Web Scaffold Validation
@@ -57,4 +57,4 @@ jobs:
           node-version: "20"
       - name: Inspect Package Manifest
         run: |
-          node -e "const pkg = require('./apps/web/package.json'); console.log('Web package valid:', pkg.name, pkg.version);"
+          node -e "const pkg = require('./frontend/package.json'); console.log('Web package valid:', pkg.name, pkg.version);"
