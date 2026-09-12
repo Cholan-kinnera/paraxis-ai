@@ -6,6 +6,16 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+REPO_ROOT = BASE_DIR.parent.parent
+
+# Load environment variables from repo root .env if present
+env_path = REPO_ROOT / ".env"
+if env_path.exists():
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(env_path)
+    except ImportError:
+        pass
 
 # Security settings
 SECRET_KEY = os.getenv("APP_SECRET_KEY", "paraxis-core-dev-insecure-secret-key-replace-in-prod-1234")
