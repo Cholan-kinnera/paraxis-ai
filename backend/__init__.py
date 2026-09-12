@@ -1,0 +1,3 @@
+"""
+Paraxis AI backend namespace.
+"""

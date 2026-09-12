@@ -1,4 +1,4 @@
-# Paraxis AI — Core Platform (`apps/core`)
+# Paraxis AI — Core Platform (`backend/core`)
 
 The sovereign domain authority and persistent platform for Paraxis AI, built with **Django 5+** and **Django REST Framework**.
 

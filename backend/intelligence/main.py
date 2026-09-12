@@ -3,8 +3,12 @@ Paraxis AI Intelligence Platform — FastAPI Entrypoint.
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from apps.intelligence.config import settings
-from apps.intelligence.api.v1.health import router as health_router
+try:
+    from backend.intelligence.config import settings
+    from backend.intelligence.api.v1.health import router as health_router
+except ImportError:
+    from config import settings
+    from api.v1.health import router as health_router
 
 app = FastAPI(
     title="Paraxis AI Intelligence Platform",

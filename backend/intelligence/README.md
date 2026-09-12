@@ -1,4 +1,4 @@
-# Paraxis AI — Intelligence Platform (`apps/intelligence`)
+# Paraxis AI — Intelligence Platform (`backend/intelligence`)
 
 The cognitive reasoning, agentic workflow, and operational RAG engine for Paraxis AI, built with **FastAPI** and **LangGraph**.
 
@@ -14,6 +14,6 @@ The cognitive reasoning, agentic workflow, and operational RAG engine for Paraxi
 ```bash
 # Ensure virtual environment is active
 pip install -r requirements.txt
-uvicorn apps.intelligence.main:app --host 0.0.0.0 --port 8001 --reload
+uvicorn backend.intelligence.main:app --host 0.0.0.0 --port 8001 --reload
 ```
 Health probe available at: `http://localhost:8001/api/v1/health`

@@ -1,7 +1,8 @@
 """
 Configuration settings for Paraxis AI Intelligence Platform.
 """
-from typing import List
+from typing import List, Union
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -26,7 +27,17 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str = ""
     
     # CORS
-    CORS_ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
+    CORS_ALLOWED_ORIGINS: Union[str, List[str]] = ["http://localhost:3000"]
+
+    @field_validator("CORS_ALLOWED_ORIGINS", mode="after")
+    @classmethod
+    def assemble_cors_origins(cls, v):
+        if isinstance(v, str):
+            if v.startswith("[") and v.endswith("]"):
+                import json
+                return json.loads(v)
+            return [i.strip() for i in v.split(",") if i.strip()]
+        return v
     
     model_config = SettingsConfigDict(
         env_file=".env",

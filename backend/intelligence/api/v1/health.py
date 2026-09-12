@@ -19,7 +19,10 @@ async def health_check():
     """
     Readiness and liveness probe for the FastAPI Intelligence Platform.
     """
-    from apps.intelligence.config import settings
+    try:
+        from backend.intelligence.config import settings
+    except ImportError:
+        from config import settings
     return HealthResponse(
         status="healthy",
         service="paraxis-intelligence",
