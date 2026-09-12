@@ -51,24 +51,44 @@ class TenantScopedManager(models.Manager.from_queryset(TenantScopedQuerySet)):
     """
     Manager that automatically enforces tenant boundaries using request context.
     Respects the difference between organization-scoped and campus-scoped data.
+    Guarantees fail-closed isolation: returns an empty queryset if tenant context is missing.
     """
 
     def get_queryset(self):
         qs = super().get_queryset()
         from core.context import get_current_campus_id, get_current_organization_id
 
-        campus_id = get_current_campus_id()
         org_id = get_current_organization_id()
+        campus_id = get_current_campus_id()
 
-        # Prioritize campus boundary if present on model and set in context
+        # Invariant 1: Multi-tenant models require active organization context.
+        # If organization context is missing, fail closed immediately.
+        if not org_id:
+            return qs.none()
+
+        # Invariant 2: Check if model requires campus-level scoping.
+        requires_campus_scope = getattr(self.model, "campus_scoped", False)
+        if not requires_campus_scope and hasattr(self.model, "campus"):
+            try:
+                campus_field = self.model._meta.get_field("campus")
+                if campus_field and not campus_field.null:
+                    requires_campus_scope = True
+            except Exception:
+                pass
+
+        # If campus context is strictly required but missing, fail closed.
+        if requires_campus_scope and not campus_id:
+            return qs.none()
+
+        # Invariant 3: Apply verified tenant boundaries.
+        filters = {}
+        if hasattr(self.model, "organization"):
+            filters["organization_id"] = org_id
+
         if campus_id and hasattr(self.model, "campus"):
-            return qs.filter(campus_id=campus_id)
+            filters["campus_id"] = campus_id
 
-        # Fall back to organization boundary if present on model and set in context
-        if org_id and hasattr(self.model, "organization"):
-            return qs.filter(organization_id=org_id)
-
-        return qs
+        return qs.filter(**filters)
 
 
 class TenantScopedModel(TimeStampedModel):
