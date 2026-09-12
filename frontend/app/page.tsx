@@ -38,7 +38,7 @@ export default function HomePage() {
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-medium text-foreground">Core Platform</h3>
-            <span className="text-xs font-mono bg-border px-2 py-0.5 rounded text-muted-foreground">apps/core</span>
+            <span className="text-xs font-mono bg-border px-2 py-0.5 rounded text-muted-foreground">backend/core</span>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
             Django 5 + DRF sovereign domain authority. Governs organizations, campuses, canonical business state, and immutable audit trails.
@@ -51,7 +51,7 @@ export default function HomePage() {
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-medium text-foreground">Intelligence Engine</h3>
-            <span className="text-xs font-mono bg-border px-2 py-0.5 rounded text-muted-foreground">apps/intelligence</span>
+            <span className="text-xs font-mono bg-border px-2 py-0.5 rounded text-muted-foreground">backend/intelligence</span>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
             FastAPI + LangGraph stateful orchestrator. Executes 13-node cognitive loops, operational RAG, and typed tool contracts.

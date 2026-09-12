@@ -1,4 +1,4 @@
-# Paraxis AI — Web Frontend (`apps/web`)
+# Paraxis AI — Web Frontend (`frontend`)
 
 The Next.js 14 web application for Paraxis AI, serving both the student/reporter portal and the operational Command Center.
 
