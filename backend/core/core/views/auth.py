@@ -37,7 +37,7 @@ class TokenObtainView(APIView):
                 action="auth.login",
                 entity_type="User",
                 entity_id=user_data["id"],
-                actor_id=user_data["id"],
+                actor=user_data["id"],
                 organization=user_data.get("organization_id"),
                 campus=user_data.get("campus_id"),
                 request=request,

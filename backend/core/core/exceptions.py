@@ -57,11 +57,18 @@ def custom_exception_handler(exc: Exception, context: dict) -> Response:
             response = exception_handler(exc, context)
 
     if response is not None:
-        # Determine standard error code
+        # Determine standard error code and normalize HTTP status
         code = "INTERNAL_ERROR"
         status_code = response.status_code
 
-        if status_code == status.HTTP_401_UNAUTHORIZED:
+        if isinstance(exc, (exceptions.AuthenticationFailed, exceptions.NotAuthenticated)):
+            status_code = status.HTTP_401_UNAUTHORIZED
+            response.status_code = status_code
+            if getattr(exc, "code", None) == "TENANT_NOT_FOUND" or "tenant" in str(exc).lower():
+                code = "TENANT_NOT_FOUND"
+            else:
+                code = "UNAUTHENTICATED"
+        elif status_code == status.HTTP_401_UNAUTHORIZED:
             code = "UNAUTHENTICATED"
         elif status_code == status.HTTP_403_FORBIDDEN:
             code = "PERMISSION_DENIED"
