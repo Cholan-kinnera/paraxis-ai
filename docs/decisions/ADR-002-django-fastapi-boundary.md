@@ -14,10 +14,10 @@ Allowing an AI agent or an asynchronous intelligence framework to directly execu
 
 ## Decision
 Establish a **strict, non-negotiable architectural boundary**:
-1. **Django Core (`apps/core`)**:
+1. **Django Core (`backend/core`)**:
    - Sole owner of canonical domain state, relational database schema, tenancy, user authentication, RBAC, SLA calculation, audit records, and transactional integrity.
    - Commits all persistent business state.
-2. **FastAPI Intelligence (`apps/intelligence`)**:
+2. **FastAPI Intelligence (`backend/intelligence`)**:
    - Owner of agent workflows, LangGraph graphs, model routing, operational RAG, semantic retrieval, and tool orchestration.
    - Operates as a stateless intelligence layer.
    - **Never writes directly to PostgreSQL domain tables**. All state modifications must be requested through Django's internal domain APIs (`/internal/v1/`) with mutual service authentication.

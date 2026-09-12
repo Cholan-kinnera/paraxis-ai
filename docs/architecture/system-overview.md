@@ -56,7 +56,7 @@ flowchart TB
 
 ## 3. Service Boundaries & Separation of Concerns
 
-### 3.1 Django Core Platform (`apps/core`)
+### 3.1 Django Core Platform (`backend/core`)
 - **Role**: Sovereign authority over business state.
 - **Boundaries**:
   - Handles all user authentication and token issuance.
@@ -65,7 +65,7 @@ flowchart TB
   - Records append-only immutable `AuditLog` entries for all state transitions.
   - Exposes `/api/v1/` for external client requests and `/internal/v1/` for authenticated service calls.
 
-### 3.2 FastAPI Intelligence (`apps/intelligence`)
+### 3.2 FastAPI Intelligence (`backend/intelligence`)
 - **Role**: Stateful cognitive reasoning and agent orchestration.
 - **Boundaries**:
   - Executes LangGraph workflows triggered by incident creation or updates.

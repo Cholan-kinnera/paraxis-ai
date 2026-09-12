@@ -24,8 +24,8 @@ flowchart TD
 
 | Test Tier | Framework / Tool | Location | Execution Target |
 | :--- | :--- | :--- | :--- |
-| **Backend Unit & Integration** | `pytest`, `pytest-django`, `pytest-asyncio` | `tests/integration/`, `apps/core/tests/`, `apps/intelligence/tests/` | Sub-second fast feedback in CI. |
-| **Frontend Unit & Component** | `Vitest`, `@testing-library/react` | `apps/web/__tests__/` | Fast DOM assertions. |
+| **Backend Unit & Integration** | `pytest`, `pytest-django`, `pytest-asyncio` | `tests/integration/`, `backend/core/tests/`, `backend/intelligence/tests/` | Sub-second fast feedback in CI. |
+| **Frontend Unit & Component** | `Vitest`, `@testing-library/react` | `frontend/__tests__/` | Fast DOM assertions. |
 | **End-to-End (E2E)** | `Playwright` | `tests/e2e/` | Headless Chromium browser user journeys. |
 | **Contract & Schema** | `pydantic`, `schemathesis` | `tests/contract/` | Validates OpenAPI & event payload contracts. |
 | **AI Evaluation Benchmarks** | Custom Python Evaluation Harness | `tests/evaluation/` | Offline regression runs with gold datasets. |

@@ -91,6 +91,6 @@ LIMIT :limit_k;
 
 ## 5. Migration Governance
 
-- All migrations are managed exclusively via Django's migration engine in `apps/core`.
+- All migrations are managed exclusively via Django's migration engine in `backend/core`.
 - Schema migrations must be backwards-compatible (expand-and-contract pattern) to support zero-downtime rolling deployments.
 - No raw DDL scripts executed outside tracked migration files.

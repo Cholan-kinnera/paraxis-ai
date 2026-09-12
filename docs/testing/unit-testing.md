@@ -15,8 +15,8 @@
 ### Example Unit Test (Policy Engine)
 ```python
 import pytest
-from apps.intelligence.agent.state import ActionProposal
-from apps.intelligence.agent.nodes.policy_gate import DeterministicPolicyEngine
+from backend.intelligence.agent.state import ActionProposal
+from backend.intelligence.agent.nodes.policy_gate import DeterministicPolicyEngine
 
 def test_policy_engine_gates_high_cost():
     action = ActionProposal(
@@ -36,5 +36,5 @@ def test_policy_engine_gates_high_cost():
 
 ## 2. Frontend Unit Testing (`Vitest`)
 
-- **File Location**: `apps/web/__tests__/**/*.test.tsx`
+- **File Location**: `frontend/__tests__/**/*.test.tsx`
 - Components are rendered using React Testing Library to assert accessibility attributes and proper DOM element presence.

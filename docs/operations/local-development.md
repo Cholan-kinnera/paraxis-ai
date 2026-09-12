@@ -38,16 +38,16 @@ make verify-foundation
 
 - **Core Backend (Django)**:
   ```bash
-  cd apps/core
+  cd backend/core
   python manage.py runserver 0.0.0.0:8000
   ```
 - **Intelligence Backend (FastAPI)**:
   ```bash
-  cd apps/intelligence
+  cd backend/intelligence
   uvicorn main:app --port 8001 --reload
   ```
 - **Web Frontend (Next.js)**:
   ```bash
-  cd apps/web
+  cd frontend
   npm run dev
   ```

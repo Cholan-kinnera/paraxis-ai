@@ -6,9 +6,9 @@
 
 ## 1. Application Module Architecture
 
-### 1.1 Django Core (`apps/core/`)
+### 1.1 Django Core (`backend/core/`)
 ```
-apps/core/
+backend/core/
 ├── manage.py
 ├── config/
 │   ├── settings.py              # Environment-backed Django configuration
@@ -38,9 +38,9 @@ apps/core/
 │   └── audit/                   # AuditLog, OperationalInsight
 ```
 
-### 1.2 FastAPI Intelligence (`apps/intelligence/`)
+### 1.2 FastAPI Intelligence (`backend/intelligence/`)
 ```
-apps/intelligence/
+backend/intelligence/
 ├── main.py                      # FastAPI app entrypoint, CORS, exception handlers
 ├── config.py                    # Pydantic Settings (ENV variables)
 ├── api/

@@ -82,3 +82,12 @@ Must be accompanied by offline evaluation benchmark results in `tests/evaluation
 - Duplicate detection precision and recall remain within accepted thresholds.
 - Prompt injection defenses remain uncompromised.
 - JSON output structure adheres strictly to the defined Pydantic schema.
+
+---
+
+## 6. Codebase Ownership & Directory Structure
+
+Engineering contributions are scoped according to the repository structure:
+- **Frontend Engineer**: Owns `frontend/` and `packages/ui/`.
+- **Backend + AI Engineer**: Owns `backend/core/` and `backend/intelligence/`.
+- **Shared**: `packages/contracts/`, `packages/sdk/`, `docs/`, `infrastructure/`, `tests/`.

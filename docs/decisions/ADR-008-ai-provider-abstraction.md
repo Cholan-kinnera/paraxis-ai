@@ -13,7 +13,7 @@ Paraxis AI relies on Large Language Models (LLMs) for natural-language intent un
 Hardcoding proprietary SDK calls (e.g., direct OpenAI or Google client invocations scattered across node logic) makes swapping models difficult, hinders local offline testing with mock or local models (Ollama/vLLM), and prevents cost-based dynamic routing.
 
 ## Decision
-Implement a **unified Model Gateway abstraction** within `apps/intelligence`:
+Implement a **unified Model Gateway abstraction** within `backend/intelligence`:
 1. **Interface Contract**: A unified `BaseModelClient` interface specifying:
    - `generate(prompt, schema=None, temperature=0.1) -> ModelResponse`
    - `stream(prompt, schema=None) -> AsyncIterator[ModelChunk]`

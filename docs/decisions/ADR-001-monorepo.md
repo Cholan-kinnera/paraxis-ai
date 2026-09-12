@@ -14,9 +14,9 @@ Splitting the project into separate repositories (polyrepo) creates severe coord
 
 ## Decision
 Adopt a single unified **monorepo** structure:
-- `apps/web`: Next.js frontend application.
-- `apps/core`: Django core domain and persistent platform.
-- `apps/intelligence`: FastAPI intelligence and LangGraph engine.
+- `frontend`: Next.js frontend application.
+- `backend/core`: Django core domain and persistent platform.
+- `backend/intelligence`: FastAPI intelligence and LangGraph engine.
 - `packages/`: Shared contracts, UI primitives, config, and SDKs.
 - `infrastructure/`: Unified Docker, database, and deployment definitions.
 - `docs/`: Unified architecture, API, and product documentation.

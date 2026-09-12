@@ -69,7 +69,7 @@ Paraxis AI is architected as a modular, cloud-agnostic monorepo with a strict, n
 
 ### The Non-Negotiable Boundary
 
-| Dimension | Django Core Platform (`apps/core`) | FastAPI Intelligence (`apps/intelligence`) |
+| Dimension | Django Core Platform (`backend/core`) | FastAPI Intelligence (`backend/intelligence`) |
 | :--- | :--- | :--- |
 | **Primary Responsibility** | Canonical domain state, tenancy, persistence, audit | Agent orchestration, reasoning workflows, semantic search |
 | **Framework** | Django 5+ & Django REST Framework | FastAPI & LangGraph |
@@ -87,8 +87,8 @@ Paraxis AI is architected as a modular, cloud-agnostic monorepo with a strict, n
 
 ```
 paraxis-ai/
-├── apps/
-│   ├── web/                     # Next.js 14+ (App Router, TypeScript, Tailwind, shadcn/ui)
+├── frontend/                    # Next.js 14+ (App Router, TypeScript, Tailwind, shadcn/ui)
+├── backend/
 │   ├── core/                    # Django Core (DRF, PostgreSQL, Canonical Domain Models)
 │   └── intelligence/            # FastAPI Intelligence (LangGraph, AI Gateway, RAG)
 ├── packages/

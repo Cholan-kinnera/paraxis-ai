@@ -10,9 +10,9 @@ For local development and hackathon evaluation, Paraxis AI runs with minimal ope
 - **`postgres` container**: `pgvector/pgvector:pg16` on host port `5432` with named volume `postgres_data` and automatic init script (`infrastructure/postgres/init-pgvector.sql`).
 - **`redis` container**: `redis:7-alpine` on host port `6379` with named volume `redis_data`.
 - **Applications**: Run either natively via hot-reloading dev servers or in optional containerized profiles:
-  - `apps/core`: `python manage.py runserver 0.0.0.0:8000`
-  - `apps/intelligence`: `uvicorn main:app --port 8001 --reload`
-  - `apps/web`: `npm run dev` on port `3000`
+  - `backend/core`: `python manage.py runserver 0.0.0.0:8000`
+  - `backend/intelligence`: `uvicorn main:app --port 8001 --reload`
+  - `frontend`: `npm run dev` on port `3000`
 
 ---
 

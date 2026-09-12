@@ -124,5 +124,5 @@ flowchart LR
 
 ## 5. Deployment Boundaries
 
-- **Development**: All services orchestrated locally via `docker-compose.yml` (`postgres`, `redis`) with native runtimes (`apps/core` on 8000, `apps/intelligence` on 8001, `apps/web` on 3000).
+- **Development**: All services orchestrated locally via `docker-compose.yml` (`postgres`, `redis`) with native runtimes (`backend/core` on 8000, `backend/intelligence` on 8001, `frontend` on 3000).
 - **Production / Enterprise**: Cloud-agnostic containerized deployment (e.g., AWS ECS, GCP Cloud Run, or generic Kubernetes) with managed PostgreSQL 16 (with pgvector) and managed Redis.

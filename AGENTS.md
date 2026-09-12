@@ -17,8 +17,8 @@ Paraxis AI sits above existing campus workflows to ingest multi-source operation
 ## 2. Non-Negotiable Architectural Invariants
 
 ### 2.1 The Django / FastAPI Boundary
-- **Django Core (`apps/core`)**: Owns canonical business state, database persistence, tenancy, organizations, users, roles, permissions, audit logs, SLA calculation, and transactional APIs.
-- **FastAPI Intelligence (`apps/intelligence`)**: Owns AI reasoning, LangGraph stateful workflows, model routing, pgvector semantic retrieval, and agent tool execution.
+- **Django Core (`backend/core`)**: Owns canonical business state, database persistence, tenancy, organizations, users, roles, permissions, audit logs, SLA calculation, and transactional APIs.
+- **FastAPI Intelligence (`backend/intelligence`)**: Owns AI reasoning, LangGraph stateful workflows, model routing, pgvector semantic retrieval, and agent tool execution.
 - **The Golden Rule**: **The LLM is NEVER the source of truth.**  
   The AI *proposes*. The domain layer *validates*. The policy engine *authorizes*. The system *executes*.  
   FastAPI and LangGraph must NEVER write directly to core relational tables bypassing Django's domain authorization.
@@ -48,9 +48,9 @@ Agents interact with the world strictly via typed, registered tools.
 
 | Path | Primary Owner | Allowed Scope of Changes |
 | :--- | :--- | :--- |
-| `apps/web/` | Frontend Team | Next.js components, pages, TanStack Query hooks, Tailwind styles. |
-| `apps/core/` | Core Backend Team | Django models, DRF serializers, domain services, migrations, audit hooks. |
-| `apps/intelligence/` | AI Engineering | FastAPI endpoints, LangGraph nodes, prompt templates, tool wrappers. |
+| `frontend/` | Frontend Team | Next.js components, pages, TanStack Query hooks, Tailwind styles. |
+| `backend/core/` | Core Backend Team | Django models, DRF serializers, domain services, migrations, audit hooks. |
+| `backend/intelligence/` | AI Engineering | FastAPI endpoints, LangGraph nodes, prompt templates, tool wrappers. |
 | `packages/contracts/` | Platform Architecture | Shared schemas, Pydantic models, event interfaces. |
 | `packages/ui/` | Design Systems | Reusable presentation primitives and design tokens. |
 | `docs/decisions/` | Principal Architects | Architecture Decision Records (ADR-001+). Required for architectural changes. |
