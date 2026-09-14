@@ -15,6 +15,14 @@ from core.serializers.access import (
     PermissionSerializer,
 )
 
+from core.serializers.campus_graph import (
+    DepartmentSerializer,
+    BuildingSerializer,
+    FloorSerializer,
+    RoomSerializer,
+    AssetSerializer,
+)
+
 __all__ = [
     "TokenObtainSerializer",
     "TokenRefreshSerializer",
@@ -23,4 +31,9 @@ __all__ = [
     "CampusSerializer",
     "RoleSerializer",
     "PermissionSerializer",
+    "DepartmentSerializer",
+    "BuildingSerializer",
+    "FloorSerializer",
+    "RoomSerializer",
+    "AssetSerializer",
 ]

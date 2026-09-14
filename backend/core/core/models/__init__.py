@@ -6,6 +6,19 @@ from core.models.organization import Organization, Campus, OrganizationStatus, C
 from core.models.access import Permission, Role
 from core.models.user import User, UserManager
 from core.models.audit import AuditLog, ActorType, AuditLogImmutableError
+from core.models.campus_graph import (
+    Department,
+    Building,
+    Floor,
+    Room,
+    Asset,
+    DepartmentStatus,
+    BuildingStatus,
+    RoomType,
+    RoomStatus,
+    AssetCategory,
+    AssetStatus,
+)
 
 __all__ = [
     "TimeStampedModel",
@@ -22,4 +35,15 @@ __all__ = [
     "AuditLog",
     "ActorType",
     "AuditLogImmutableError",
+    "Department",
+    "Building",
+    "Floor",
+    "Room",
+    "Asset",
+    "DepartmentStatus",
+    "BuildingStatus",
+    "RoomType",
+    "RoomStatus",
+    "AssetCategory",
+    "AssetStatus",
 ]

@@ -7,6 +7,7 @@ from core.permissions.rbac import (
     IsCampusAdmin,
     require_roles,
     require_permission,
+    require_entity_permission,
 )
 
 __all__ = [
@@ -15,4 +16,5 @@ __all__ = [
     "IsCampusAdmin",
     "require_roles",
     "require_permission",
+    "require_entity_permission",
 ]
