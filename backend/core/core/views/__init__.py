@@ -19,6 +19,11 @@ from core.views.campus_graph import (
     AssetListCreateView,
     AssetDetailView,
 )
+from core.views.incident import (
+    IncidentListCreateView,
+    IncidentDetailView,
+    IncidentEventsTimelineView,
+)
 
 __all__ = [
     "health_check",
@@ -40,4 +45,7 @@ __all__ = [
     "RoomDetailView",
     "AssetListCreateView",
     "AssetDetailView",
+    "IncidentListCreateView",
+    "IncidentDetailView",
+    "IncidentEventsTimelineView",
 ]

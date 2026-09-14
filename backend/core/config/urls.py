@@ -21,6 +21,11 @@ from core.views.campus_graph import (
     AssetListCreateView,
     AssetDetailView,
 )
+from core.views.incident import (
+    IncidentListCreateView,
+    IncidentDetailView,
+    IncidentEventsTimelineView,
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -59,4 +64,9 @@ urlpatterns = [
 
     path("api/v1/assets/", AssetListCreateView.as_view(), name="asset_list_create"),
     path("api/v1/assets/<uuid:pk>/", AssetDetailView.as_view(), name="asset_detail"),
+
+    # Incident & Issue Management (Phase 3)
+    path("api/v1/incidents/", IncidentListCreateView.as_view(), name="incident_list_create"),
+    path("api/v1/incidents/<uuid:pk>/", IncidentDetailView.as_view(), name="incident_detail"),
+    path("api/v1/incidents/<uuid:pk>/events/", IncidentEventsTimelineView.as_view(), name="incident_events_timeline"),
 ]
