@@ -9,6 +9,18 @@ from core.views.auth import TokenObtainView, TokenRefreshView, UserProfileView
 from core.views.organization import OrganizationListCreateView, OrganizationDetailView
 from core.views.campus import CampusListCreateView, CampusDetailView
 from core.views.access import RoleListView
+from core.views.campus_graph import (
+    DepartmentListCreateView,
+    DepartmentDetailView,
+    BuildingListCreateView,
+    BuildingDetailView,
+    FloorListCreateView,
+    FloorDetailView,
+    RoomListCreateView,
+    RoomDetailView,
+    AssetListCreateView,
+    AssetDetailView,
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -31,4 +43,20 @@ urlpatterns = [
 
     # RBAC Roles
     path("api/v1/roles/", RoleListView.as_view(), name="role_list"),
+
+    # Campus Operational Graph
+    path("api/v1/departments/", DepartmentListCreateView.as_view(), name="department_list_create"),
+    path("api/v1/departments/<uuid:pk>/", DepartmentDetailView.as_view(), name="department_detail"),
+
+    path("api/v1/buildings/", BuildingListCreateView.as_view(), name="building_list_create"),
+    path("api/v1/buildings/<uuid:pk>/", BuildingDetailView.as_view(), name="building_detail"),
+
+    path("api/v1/floors/", FloorListCreateView.as_view(), name="floor_list_create"),
+    path("api/v1/floors/<uuid:pk>/", FloorDetailView.as_view(), name="floor_detail"),
+
+    path("api/v1/rooms/", RoomListCreateView.as_view(), name="room_list_create"),
+    path("api/v1/rooms/<uuid:pk>/", RoomDetailView.as_view(), name="room_detail"),
+
+    path("api/v1/assets/", AssetListCreateView.as_view(), name="asset_list_create"),
+    path("api/v1/assets/<uuid:pk>/", AssetDetailView.as_view(), name="asset_detail"),
 ]

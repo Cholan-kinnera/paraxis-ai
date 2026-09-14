@@ -7,6 +7,19 @@ from core.views.organization import OrganizationListCreateView, OrganizationDeta
 from core.views.campus import CampusListCreateView, CampusDetailView
 from core.views.access import RoleListView
 
+from core.views.campus_graph import (
+    DepartmentListCreateView,
+    DepartmentDetailView,
+    BuildingListCreateView,
+    BuildingDetailView,
+    FloorListCreateView,
+    FloorDetailView,
+    RoomListCreateView,
+    RoomDetailView,
+    AssetListCreateView,
+    AssetDetailView,
+)
+
 __all__ = [
     "health_check",
     "TokenObtainView",
@@ -17,4 +30,14 @@ __all__ = [
     "CampusListCreateView",
     "CampusDetailView",
     "RoleListView",
+    "DepartmentListCreateView",
+    "DepartmentDetailView",
+    "BuildingListCreateView",
+    "BuildingDetailView",
+    "FloorListCreateView",
+    "FloorDetailView",
+    "RoomListCreateView",
+    "RoomDetailView",
+    "AssetListCreateView",
+    "AssetDetailView",
 ]
