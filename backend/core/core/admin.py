@@ -8,6 +8,13 @@ from core.models.organization import Organization, Campus
 from core.models.access import Permission, Role
 from core.models.user import User
 from core.models.audit import AuditLog
+from core.models.campus_graph import (
+    Department,
+    Building,
+    Floor,
+    Room,
+    Asset,
+)
 
 
 @admin.register(Organization)
@@ -79,3 +86,38 @@ class AuditLogAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(Department)
+class DepartmentAdmin(admin.ModelAdmin):
+    list_display = ("name", "code", "campus", "organization", "status")
+    list_filter = ("status", "campus", "organization")
+    search_fields = ("name", "code")
+
+
+@admin.register(Building)
+class BuildingAdmin(admin.ModelAdmin):
+    list_display = ("name", "code", "campus", "floors_count", "status")
+    list_filter = ("status", "campus", "organization")
+    search_fields = ("name", "code")
+
+
+@admin.register(Floor)
+class FloorAdmin(admin.ModelAdmin):
+    list_display = ("label", "floor_number", "building", "campus")
+    list_filter = ("building__campus", "building")
+    search_fields = ("label", "building__name")
+
+
+@admin.register(Room)
+class RoomAdmin(admin.ModelAdmin):
+    list_display = ("room_number", "name", "room_type", "floor", "building", "status", "capacity")
+    list_filter = ("room_type", "status", "building__campus", "building")
+    search_fields = ("room_number", "name")
+
+
+@admin.register(Asset)
+class AssetAdmin(admin.ModelAdmin):
+    list_display = ("name", "asset_tag", "category", "department", "building", "room", "status")
+    list_filter = ("category", "status", "department", "campus")
+    search_fields = ("name", "asset_tag", "serial_number")
