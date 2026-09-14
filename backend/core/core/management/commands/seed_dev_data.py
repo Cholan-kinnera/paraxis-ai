@@ -20,7 +20,16 @@ from core.models.campus_graph import (
     AssetCategory,
     AssetStatus,
 )
+from core.models.incident import (
+    Incident,
+    IncidentEvent,
+    IncidentStatus,
+    IncidentPriority,
+    IncidentCategory,
+    IncidentEventType,
+)
 from core.services.audit import log_audit_event
+
 
 DEV_PASSWORD = "DevPassword123!"
 
@@ -320,6 +329,7 @@ class Command(BaseCommand):
             },
         ]
 
+        user_objs = {}
         for u_data in dev_users_data:
             user = User.objects.filter(organization=org, email=u_data["email"]).first()
             if not user:
@@ -345,6 +355,7 @@ class Command(BaseCommand):
             # Assign roles
             assigned_roles = [role_objs[r] for r in u_data["roles"] if r in role_objs]
             user.roles.set(assigned_roles)
+            user_objs[user.email] = user
 
         # 5. Campus Operational Graph (Departments, Buildings, Floors, Rooms, Assets)
         self.stdout.write(self.style.NOTICE("📍 Provisioning Campus Operational Graph..."))
@@ -497,6 +508,81 @@ class Command(BaseCommand):
             )
             self.stdout.write(f"  • Asset: {asset.name} [{asset.asset_tag}] ({'created' if created else 'exists'})")
 
+        # 7. Seed Operational Incidents (Phase 3)
+        self.stdout.write("Seeding operational incidents...")
+        incidents_data = [
+            {
+                "title": "Hardware Systems Lab Wi-Fi Access Point Offline",
+                "description": "The Cisco AP in Room 101 has lost connection. Several students in the lab are unable to access lab servers.",
+                "category": IncidentCategory.IT_NETWORK,
+                "priority": IncidentPriority.HIGH,
+                "status": IncidentStatus.IN_PROGRESS,
+                "reporter": user_objs.get("student.eng@apex.edu"),
+                "department": dept_objs.get("IT"),
+                "assigned_to": user_objs.get("technician@apex.edu"),
+                "building": eng_bldg,
+                "room": room_objs.get("101"),
+                "asset": Asset.all_objects.filter(campus=eng_campus, asset_tag="AST-AP-101").first(),
+            },
+            {
+                "title": "Split AC in Hardware Lab Blowing Warm Air",
+                "description": "The Daikin 2-ton split AC is blowing ambient air instead of cooling. Ambient lab temperature rising.",
+                "category": IncidentCategory.HVAC,
+                "priority": IncidentPriority.MEDIUM,
+                "status": IncidentStatus.ASSIGNED,
+                "reporter": user_objs.get("faculty@apex.edu"),
+                "department": dept_objs.get("FACILITIES"),
+                "building": eng_bldg,
+                "room": room_objs.get("101"),
+                "asset": Asset.all_objects.filter(campus=eng_campus, asset_tag="AST-AC-101").first(),
+            },
+            {
+                "title": "Corridor Light Flickering Near Server Room Entrance",
+                "description": "Fluorescent fixture outside server room 001 is flickering rapidly, causing a visual hazard.",
+                "category": IncidentCategory.ELECTRICAL,
+                "priority": IncidentPriority.LOW,
+                "status": IncidentStatus.INGESTED,
+                "reporter": user_objs.get("student.eng@apex.edu"),
+                "department": dept_objs.get("ELECTRICAL"),
+                "building": eng_bldg,
+                "room": room_objs.get("001"),
+            },
+        ]
+
+        for inc_info in incidents_data:
+            rm = inc_info.get("room")
+            fl = rm.floor if rm else None
+            bld = rm.building if rm else inc_info.get("building")
+            inc, created = Incident.all_objects.get_or_create(
+                organization=org,
+                campus=eng_campus,
+                title=inc_info["title"],
+                defaults={
+                    "description": inc_info["description"],
+                    "category": inc_info["category"],
+                    "priority": inc_info["priority"],
+                    "status": inc_info["status"],
+                    "reporter": inc_info["reporter"],
+                    "department": inc_info.get("department"),
+                    "assigned_to": inc_info.get("assigned_to"),
+                    "building": bld,
+                    "floor": fl,
+                    "room": rm,
+                    "asset": inc_info.get("asset"),
+                },
+            )
+            if created:
+                IncidentEvent.objects.create(
+                    organization=org,
+                    campus=eng_campus,
+                    incident=inc,
+                    event_type=IncidentEventType.REPORTED,
+                    description=f"Incident reported: {inc.title}",
+                    actor=inc.reporter,
+                    metadata={"priority": inc.priority, "status": inc.status},
+                )
+            self.stdout.write(f"  • Incident: {inc.title} [{inc.status}] ({'created' if created else 'exists'})")
+
         log_audit_event(
             action="system.seed_dev_data",
             entity_type="System",
@@ -504,7 +590,7 @@ class Command(BaseCommand):
             actor=None,
             actor_type="SYSTEM",
             organization=org,
-            post_state={"status": "complete", "users_seeded": len(dev_users_data), "assets_seeded": len(assets_data)},
+            post_state={"status": "complete", "users_seeded": len(dev_users_data), "assets_seeded": len(assets_data), "incidents_seeded": len(incidents_data)},
         )
 
         self.stdout.write(self.style.SUCCESS("✅ Development seed data successfully provisioned!"))
