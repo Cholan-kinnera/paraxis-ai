@@ -19,6 +19,16 @@ from core.models.campus_graph import (
     AssetCategory,
     AssetStatus,
 )
+from core.models.incident import (
+    Incident,
+    IncidentEvent,
+    IncidentStatus,
+    IncidentPriority,
+    IncidentCategory,
+    IncidentSource,
+    IncidentEventType,
+    IncidentEventImmutableError,
+)
 
 __all__ = [
     "TimeStampedModel",
@@ -46,4 +56,12 @@ __all__ = [
     "RoomStatus",
     "AssetCategory",
     "AssetStatus",
+    "Incident",
+    "IncidentEvent",
+    "IncidentStatus",
+    "IncidentPriority",
+    "IncidentCategory",
+    "IncidentSource",
+    "IncidentEventType",
+    "IncidentEventImmutableError",
 ]
