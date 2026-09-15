@@ -22,6 +22,8 @@ class DuplicateAnalysis(BaseModel):
     master_incident_id: Optional[str] = None
     similarity_score: float = 0.0
     matched_incident_title: Optional[str] = None
+    relationship_type: Literal["NONE", "RELATED", "DUPLICATE"] = "NONE"
+    rationale: str = ""
 
 
 class ActionProposal(BaseModel):
@@ -72,6 +74,8 @@ class IncidentAgentState(BaseModel):
     entities: Optional[EntityResolution] = None
     duplicate: Optional[DuplicateAnalysis] = None
     campus_context: Dict[str, Any] = Field(default_factory=dict)
+    operational_insights: List[Dict[str, Any]] = Field(default_factory=list)
+    memory_precedents: List[Dict[str, Any]] = Field(default_factory=list)
 
     # Action & Policy Evaluation
     proposal: Optional[ActionProposal] = None

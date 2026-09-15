@@ -365,3 +365,80 @@ class DjangoCoreClient:
             "resolved_at": "2026-09-15T09:05:00Z",
         }
 
+    async def search_operational_memory(
+        self,
+        query_embedding: List[float],
+        campus_id: str,
+        limit: int = 5,
+        threshold: Optional[float] = None,
+        source_type: Optional[str] = None,
+        category: Optional[str] = None,
+        building_id: Optional[str] = None,
+        room_id: Optional[str] = None,
+        asset_id: Optional[str] = None,
+        correlation_headers: Optional[Dict[str, str]] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Retrieves semantically similar memory chunks via Django Core pgvector search.
+        Preserves tenant boundary and correlation headers.
+        """
+        headers = self._build_headers(correlation_headers, tenant_id=campus_id)
+        url = f"{self.base_url}/api/v1/memory/search/"
+        payload = {
+            "query_embedding": query_embedding,
+            "limit": limit,
+            "threshold": threshold,
+            "source_type": source_type,
+            "category": category,
+            "building_id": building_id,
+            "room_id": room_id,
+            "asset_id": asset_id,
+        }
+
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                resp = await client.post(url, headers=headers, json=payload)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    return data.get("data", [])
+                else:
+                    logger.warning(f"Memory search returned {resp.status_code}: {resp.text}")
+        except Exception as exc:
+            logger.warning(f"Django Core memory search request failed: {exc}")
+
+        return []
+
+    async def get_operational_insights(
+        self,
+        campus_id: str,
+        target_asset_id: Optional[str] = None,
+        target_room_id: Optional[str] = None,
+        status: Optional[str] = "ACTIVE",
+        correlation_headers: Optional[Dict[str, str]] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Queries active institutional knowledge and recurring problem insights from Django Core.
+        """
+        headers = self._build_headers(correlation_headers, tenant_id=campus_id)
+        url = f"{self.base_url}/api/v1/memory/insights/"
+        params: Dict[str, str] = {}
+        if target_asset_id:
+            params["target_asset"] = target_asset_id
+        if target_room_id:
+            params["target_room"] = target_room_id
+        if status:
+            params["status"] = status
+
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                resp = await client.get(url, headers=headers, params=params)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    return data.get("data", [])
+                else:
+                    logger.warning(f"Operational insights returned {resp.status_code}: {resp.text}")
+        except Exception as exc:
+            logger.warning(f"Django Core insights request failed: {exc}")
+
+        return []
+

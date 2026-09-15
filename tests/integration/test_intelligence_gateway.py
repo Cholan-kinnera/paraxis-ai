@@ -62,7 +62,7 @@ async def test_provider_gateway_streaming_and_embeddings():
     # Embeddings
     vecs = await adapter.embed(["Incident in Building A", "Incident in Building B"])
     assert len(vecs) == 2
-    assert len(vecs[0]) == 64
+    assert len(vecs[0]) == 768
 
 
 # ---------------------------------------------------------------------------
@@ -298,7 +298,7 @@ def test_api_list_tools():
     assert resp.status_code == 200
     data = resp.json()
     assert data["status"] == "success"
-    assert data["data"]["count"] == 11
+    assert data["data"]["count"] == 13
 
 
 def test_api_execute_tool_directly():
