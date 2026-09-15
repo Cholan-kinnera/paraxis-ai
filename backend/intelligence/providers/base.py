@@ -28,6 +28,26 @@ class ModelChunk(BaseModel):
     is_final: bool = False
 
 
+PARAXIS_EMBEDDING_DIMENSION = 768
+
+
+def validate_embeddings(embeddings: List[List[float]]) -> List[List[float]]:
+    """Enforces canonical Paraxis 768-dimensional float embedding contract."""
+    for idx, vec in enumerate(embeddings):
+        if not isinstance(vec, list) or len(vec) != PARAXIS_EMBEDDING_DIMENSION:
+            actual_dim = len(vec) if isinstance(vec, list) else type(vec).__name__
+            raise ValueError(
+                f"Embedding vector at index {idx} has invalid dimension {actual_dim}; "
+                f"strictly expected {PARAXIS_EMBEDDING_DIMENSION}"
+            )
+        for val_idx, val in enumerate(vec):
+            if not isinstance(val, (float, int)):
+                raise ValueError(
+                    f"Embedding vector at index {idx} contains non-float element at index {val_idx}: {type(val)}"
+                )
+    return embeddings
+
+
 class BaseModelClient(ABC):
     """
     Abstract interface for AI model providers.
@@ -61,5 +81,6 @@ class BaseModelClient(ABC):
 
     @abstractmethod
     async def embed(self, texts: List[str]) -> List[List[float]]:
-        """Generates dense vector embeddings for input texts."""
+        """Generates dense vector embeddings for input texts strictly conforming to 768 dimensions."""
         pass
+

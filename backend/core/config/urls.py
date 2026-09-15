@@ -38,6 +38,11 @@ from core.views.task import (
     TaskCompleteView,
     TaskCancelView,
 )
+from core.views.memory import (
+    OperationalMemorySearchView,
+    OperationalInsightListView,
+    OperationalMemoryIndexView,
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -93,4 +98,9 @@ urlpatterns = [
     path("api/v1/tasks/<uuid:pk>/start/", TaskStartView.as_view(), name="task_start"),
     path("api/v1/tasks/<uuid:pk>/complete/", TaskCompleteView.as_view(), name="task_complete"),
     path("api/v1/tasks/<uuid:pk>/cancel/", TaskCancelView.as_view(), name="task_cancel"),
+
+    # Operational Memory & Institutional Knowledge (Phase 6)
+    path("api/v1/memory/search/", OperationalMemorySearchView.as_view(), name="memory_search"),
+    path("api/v1/memory/insights/", OperationalInsightListView.as_view(), name="memory_insights"),
+    path("api/v1/memory/index/", OperationalMemoryIndexView.as_view(), name="memory_index"),
 ]

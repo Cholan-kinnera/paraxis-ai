@@ -80,15 +80,22 @@ class MockModelAdapter(BaseModelClient):
             yield ModelChunk(text=chunk_text, is_final=is_final)
 
     async def embed(self, texts: List[str]) -> List[List[float]]:
+        import math
+        from backend.intelligence.providers.base import validate_embeddings, PARAXIS_EMBEDDING_DIMENSION
+
         embeddings = []
         for text in texts:
-            # Deterministic pseudo-embedding using SHA-256 hash
-            h = hashlib.sha256(text.encode("utf-8")).digest()
-            vec = [(b / 255.0) * 2.0 - 1.0 for b in h]
-            # Pad to 64 dimensions for compact testing
-            vec = (vec * 2)[:64]
-            embeddings.append(vec)
-        return embeddings
+            # Deterministic pseudo-embedding using SHA-256 seed hashing across 768 dimensions
+            vec = []
+            for i in range(24):  # 24 * 32 = 768 dimensions
+                h = hashlib.sha256(f"{text}_{i}".encode("utf-8")).digest()
+                vec.extend([(b / 255.0) * 2.0 - 1.0 for b in h])
+            # Normalize to unit length
+            norm = math.sqrt(sum(x * x for x in vec)) or 1.0
+            norm_vec = [round(x / norm, 6) for x in vec[:PARAXIS_EMBEDDING_DIMENSION]]
+            embeddings.append(norm_vec)
+        return validate_embeddings(embeddings)
+
 
     def _generate_mock_content(self, prompt: str, schema: Optional[Type[T]]) -> str:
         prompt_lower = prompt.lower()

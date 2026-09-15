@@ -125,13 +125,17 @@ class OpenAIAdapter(BaseModelClient):
         yield ModelChunk(text="", is_final=True)
 
     async def embed(self, texts: List[str]) -> List[List[float]]:
+        from backend.intelligence.providers.base import validate_embeddings
+
         url = f"{self.base_url}/embeddings"
         headers = {"Authorization": f"Bearer {self.api_key}"}
-        payload = {"model": "text-embedding-3-small", "input": texts}
+        payload = {"model": "text-embedding-3-small", "input": texts, "dimensions": 768}
 
         async with httpx.AsyncClient(timeout=30.0) as client:
             resp = await client.post(url, headers=headers, json=payload)
             resp.raise_for_status()
             data = resp.json()
 
-        return [item["embedding"] for item in data.get("data", [])]
+        embeddings = [item["embedding"] for item in data.get("data", [])]
+        return validate_embeddings(embeddings)
+

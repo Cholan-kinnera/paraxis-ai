@@ -23,6 +23,8 @@ from backend.intelligence.agent.tools.schemas import (
     RequestHumanApprovalInput, RequestHumanApprovalOutput,
     EscalateIncidentInput, EscalateIncidentOutput,
     RecordResolutionInput, RecordResolutionOutput,
+    SearchOperationalMemoryInput, SearchOperationalMemoryOutput,
+    GetOperationalInsightsInput, GetOperationalInsightsOutput,
 )
 
 logger = logging.getLogger("paraxis.tools.registry")
@@ -298,6 +300,49 @@ class ToolRegistry:
             input_schema=RecordResolutionInput,
             output_schema=RecordResolutionOutput,
             handler=_exec_record_res,
+        )
+
+        # 12. search_operational_memory (Phase 6)
+        async def _exec_search_mem(params: SearchOperationalMemoryInput, corrs: Dict[str, str]) -> Dict[str, Any]:
+            matches = await self.client.search_operational_memory(
+                query_embedding=params.query_embedding,
+                campus_id=params.campus_id,
+                limit=params.limit,
+                threshold=params.threshold,
+                source_type=params.source_type,
+                category=params.category,
+                building_id=params.building_id,
+                room_id=params.room_id,
+                asset_id=params.asset_id,
+                correlation_headers=corrs,
+            )
+            return SearchOperationalMemoryOutput(results=matches).model_dump()
+
+        self.register(
+            name="search_operational_memory",
+            description="Retrieve semantically similar historical incidents, tasks, and asset specifications from pgvector.",
+            input_schema=SearchOperationalMemoryInput,
+            output_schema=SearchOperationalMemoryOutput,
+            handler=_exec_search_mem,
+        )
+
+        # 13. get_operational_insights (Phase 6)
+        async def _exec_get_insights(params: GetOperationalInsightsInput, corrs: Dict[str, str]) -> Dict[str, Any]:
+            insights = await self.client.get_operational_insights(
+                campus_id=params.campus_id,
+                target_asset_id=params.target_asset_id,
+                target_room_id=params.target_room_id,
+                status=params.status,
+                correlation_headers=corrs,
+            )
+            return GetOperationalInsightsOutput(insights=insights).model_dump()
+
+        self.register(
+            name="get_operational_insights",
+            description="Retrieve active institutional knowledge and recurring problem insights for campus assets or rooms.",
+            input_schema=GetOperationalInsightsInput,
+            output_schema=GetOperationalInsightsOutput,
+            handler=_exec_get_insights,
         )
 
     async def execute(

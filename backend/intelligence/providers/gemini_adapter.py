@@ -120,6 +120,8 @@ class GoogleGeminiAdapter(BaseModelClient):
         yield ModelChunk(text="", is_final=True)
 
     async def embed(self, texts: List[str]) -> List[List[float]]:
+        from backend.intelligence.providers.base import validate_embeddings
+
         url = f"{self.base_url}/models/text-embedding-004:batchEmbedContents?key={self.api_key}"
         requests = [{"model": "models/text-embedding-004", "content": {"parts": [{"text": t}]}} for t in texts]
         payload = {"requests": requests}
@@ -130,4 +132,5 @@ class GoogleGeminiAdapter(BaseModelClient):
             data = resp.json()
 
         embeddings = [item["values"] for item in data.get("embeddings", [])]
-        return embeddings
+        return validate_embeddings(embeddings)
+

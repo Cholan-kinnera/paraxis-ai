@@ -176,3 +176,60 @@ class RecordResolutionOutput(BaseModel):
     incident_id: str
     status: str = "RESOLVED"
     resolved_at: str
+
+
+# 12. search_operational_memory (Phase 6)
+class MemoryMatch(BaseModel):
+    id: str
+    source_type: str
+    source_id: str
+    source_version: int = 1
+    title: str
+    canonical_text: str
+    category: str = ""
+    building_id: Optional[str] = None
+    room_id: Optional[str] = None
+    asset_id: Optional[str] = None
+    metadata_payload: Dict[str, Any] = Field(default_factory=dict)
+    similarity_score: float = 0.0
+
+
+class SearchOperationalMemoryInput(BaseModel):
+    query_embedding: List[float]
+    campus_id: str
+    limit: int = 5
+    threshold: Optional[float] = None
+    source_type: Optional[str] = None
+    category: Optional[str] = None
+    building_id: Optional[str] = None
+    room_id: Optional[str] = None
+    asset_id: Optional[str] = None
+
+
+class SearchOperationalMemoryOutput(BaseModel):
+    results: List[MemoryMatch] = Field(default_factory=list)
+
+
+# 13. get_operational_insights (Phase 6)
+class InsightItem(BaseModel):
+    id: str
+    insight_type: str
+    status: str = "ACTIVE"
+    confidence_score: float = 0.0
+    incident_count: int = 0
+    fact_summary: str = ""
+    inference_analysis: str = ""
+    recommendation: str = ""
+    target_asset_name: Optional[str] = None
+    target_room_number: Optional[str] = None
+
+
+class GetOperationalInsightsInput(BaseModel):
+    campus_id: str
+    target_asset_id: Optional[str] = None
+    target_room_id: Optional[str] = None
+    status: Optional[str] = "ACTIVE"
+
+
+class GetOperationalInsightsOutput(BaseModel):
+    insights: List[InsightItem] = Field(default_factory=list)

@@ -44,6 +44,15 @@ from core.models.task import (
     VALID_TASK_TRANSITIONS,
 )
 
+from core.models.memory import (
+    OperationalMemorySourceType,
+    OperationalMemoryChunk,
+    OperationalInsightType,
+    OperationalInsightStatus,
+    OperationalInsight,
+    OperationalInsightIncidentEvidence,
+)
+
 __all__ = [
     "TimeStampedModel",
     "TenantScopedModel",
@@ -88,4 +97,11 @@ __all__ = [
     "TaskEventType",
     "TaskEventImmutableError",
     "VALID_TASK_TRANSITIONS",
+    "OperationalMemorySourceType",
+    "OperationalMemoryChunk",
+    "OperationalInsightType",
+    "OperationalInsightStatus",
+    "OperationalInsight",
+    "OperationalInsightIncidentEvidence",
 ]
+
