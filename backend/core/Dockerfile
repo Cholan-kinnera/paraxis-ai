@@ -31,8 +31,11 @@ WORKDIR /app/backend/core
 # Collect static files for Django Admin / DRF API browsable interface
 RUN python manage.py collectstatic --noinput
 
+# Ensure entrypoint script is executable
+RUN chmod +x /app/backend/core/entrypoint.sh
+
 # Expose default HTTP port
 EXPOSE 8000
 
-# Run production WSGI server with dynamic Render $PORT support
-CMD ["sh", "-c", "gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers ${GUNICORN_WORKERS:-2} --timeout 120 --access-logfile - --error-logfile -"]
+# Set entrypoint to run migrations before Gunicorn
+ENTRYPOINT ["/app/backend/core/entrypoint.sh"]

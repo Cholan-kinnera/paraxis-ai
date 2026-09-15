@@ -60,14 +60,21 @@ For deploying Django Core on Render connected to Supabase, the **Session Mode Co
 
 ---
 
-## 3. Static File Strategy
+## 3. Migration & Static File Strategy
 
-- **Canonical Strategy**: **Baked during Docker Image Build**.
-- In [`backend/core/Dockerfile`](file:///home/cholan0415/Projects/paraxis-ai/backend/core/Dockerfile), `python manage.py collectstatic --noinput` executes at build time, placing static assets into `/app/backend/core/staticfiles`.
-- Render's **Pre-Deploy Command** is dedicated solely to schema migrations:
+### 3.1 Migration Strategy (Render Free Startup Hook)
+- **Current Render Free Deployment**: Render Free web services do not support a dedicated Pre-Deploy Command. Migrations are executed automatically inside the Django container entrypoint ([`backend/core/entrypoint.sh`](file:///home/cholan0415/Projects/paraxis-ai/backend/core/entrypoint.sh)) before the Gunicorn WSGI server is invoked:
   ```bash
   python manage.py migrate --noinput
   ```
+- **Strict Startup Failure Behavior**: If PostgreSQL/Supabase is unreachable or if any migration fails, the container process immediately aborts (`set -eu`), preventing Gunicorn from starting in a broken or un-migrated state.
+- **Idempotency**: Django migrations are strictly idempotent. When subsequent deployments or container restarts occur without schema changes, `migrate --noinput` completes near-instantly with zero operational side-effects.
+- **Data Integrity**: Production data is **never** seeded automatically during startup (`seed_dev_data` or fixtures are strictly prohibited in container startup).
+- **Future Paid Tier Optimization**: On paid Render tiers (Starter/Standard), migrations may optionally be moved out of the container lifecycle into Render's native Pre-Deploy Command (`python manage.py migrate --noinput`), ensuring zero-downtime rolling deploys. The current implementation remains completely self-contained and fully functional on the Free plan.
+
+### 3.2 Static File Strategy
+- **Canonical Strategy**: **Baked during Docker Image Build**.
+- In [`backend/core/Dockerfile`](file:///home/cholan0415/Projects/paraxis-ai/backend/core/Dockerfile), `python manage.py collectstatic --noinput` executes at build time, placing static assets into `/app/backend/core/staticfiles`.
 - No redundant static collection occurs during deployment or container startup.
 
 ---
@@ -78,10 +85,10 @@ For deploying Django Core on Render connected to Supabase, the **Session Mode Co
 - **Environment**: Docker
 - **Docker Build Context**: `.` (Repository root)
 - **Dockerfile Path**: `backend/core/Dockerfile`
-- **Pre-Deploy Command**: `python manage.py migrate --noinput`
+- **Entrypoint**: Runs `python manage.py migrate --noinput` followed by `exec gunicorn`
 - **Health Check Path**: `/api/v1/health/`
 - **Auto-Deploy**: Enabled on `main` branch
-- **Instance Sizing**: Starter ($7/mo) or Standard ($25/mo)
+- **Instance Sizing**: Free (or Starter/Standard)
 - **Dynamic Port**: Binds to `0.0.0.0:$PORT` via Gunicorn.
 
 ### 4.2 Service 2: `paraxis-intelligence` (FastAPI Web Service)
