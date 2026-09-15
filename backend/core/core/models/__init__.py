@@ -29,6 +29,20 @@ from core.models.incident import (
     IncidentEventType,
     IncidentEventImmutableError,
 )
+from core.models.sla import (
+    SLA,
+    SLATracking,
+    SLAState,
+)
+from core.models.task import (
+    Task,
+    TaskEvent,
+    TaskStatus,
+    TaskType,
+    TaskEventType,
+    TaskEventImmutableError,
+    VALID_TASK_TRANSITIONS,
+)
 
 __all__ = [
     "TimeStampedModel",
@@ -64,4 +78,14 @@ __all__ = [
     "IncidentSource",
     "IncidentEventType",
     "IncidentEventImmutableError",
+    "SLA",
+    "SLATracking",
+    "SLAState",
+    "Task",
+    "TaskEvent",
+    "TaskStatus",
+    "TaskType",
+    "TaskEventType",
+    "TaskEventImmutableError",
+    "VALID_TASK_TRANSITIONS",
 ]

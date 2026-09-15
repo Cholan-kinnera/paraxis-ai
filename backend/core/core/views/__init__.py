@@ -24,6 +24,18 @@ from core.views.incident import (
     IncidentDetailView,
     IncidentEventsTimelineView,
 )
+from core.views.sla import (
+    SLAListCreateView,
+)
+from core.views.task import (
+    TaskListCreateView,
+    TaskDetailView,
+    TaskEventsTimelineView,
+    TaskAssignView,
+    TaskStartView,
+    TaskCompleteView,
+    TaskCancelView,
+)
 
 __all__ = [
     "health_check",
@@ -48,4 +60,12 @@ __all__ = [
     "IncidentListCreateView",
     "IncidentDetailView",
     "IncidentEventsTimelineView",
+    "SLAListCreateView",
+    "TaskListCreateView",
+    "TaskDetailView",
+    "TaskEventsTimelineView",
+    "TaskAssignView",
+    "TaskStartView",
+    "TaskCompleteView",
+    "TaskCancelView",
 ]

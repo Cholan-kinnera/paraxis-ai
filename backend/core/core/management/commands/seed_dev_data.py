@@ -28,6 +28,16 @@ from core.models.incident import (
     IncidentCategory,
     IncidentEventType,
 )
+from datetime import timedelta
+from core.models.sla import SLA, SLATracking, SLAState
+from core.models.task import (
+    Task,
+    TaskEvent,
+    TaskStatus,
+    TaskType,
+    TaskEventType,
+)
+from core.services.sla import attach_sla_to_task
 from core.services.audit import log_audit_event
 
 
@@ -42,11 +52,19 @@ STANDARD_PERMISSIONS = [
     ("incident:manage_all", "Manage all campus incidents", "incident"),
     ("incident:escalate", "Escalate incident priority", "incident"),
     # Tasks
+    ("task:create", "Create operational tasks", "task"),
+    ("task:read", "View operational tasks", "task"),
+    ("task:update", "Update operational tasks", "task"),
+    ("task:cancel", "Cancel operational tasks", "task"),
     ("task:view_assigned", "View assigned tasks", "task"),
     ("task:acknowledge", "Acknowledge task assignment", "task"),
     ("task:start", "Start task work", "task"),
     ("task:complete", "Complete task work", "task"),
     ("task:reassign", "Reassign task to another technician", "task"),
+    ("task:manage_all", "Manage all campus tasks", "task"),
+    # SLAs
+    ("sla:read", "View SLA policies", "governance"),
+    ("sla:manage", "Manage SLA policies", "governance"),
     # Assets & Facilities
     ("asset:view", "View campus assets", "facility"),
     ("hostel:view_queue", "View hostel maintenance queue", "facility"),
@@ -112,6 +130,7 @@ ROLE_PERMISSIONS_MAP = {
         "department:read",
     ],
     "TECHNICIAN": [
+        "task:read",
         "task:view_assigned",
         "task:acknowledge",
         "task:start",
@@ -142,7 +161,16 @@ ROLE_PERMISSIONS_MAP = {
     ],
     "CAMPUS_ADMIN": [
         "incident:manage_all",
+        "task:create",
+        "task:read",
+        "task:update",
         "task:reassign",
+        "task:start",
+        "task:complete",
+        "task:cancel",
+        "task:manage_all",
+        "sla:read",
+        "sla:manage",
         "approval:decide",
         "policy:manage",
         "audit:view",
@@ -174,6 +202,16 @@ ROLE_PERMISSIONS_MAP = {
         "system:configure",
         "audit:export_all",
         "incident:manage_all",
+        "task:create",
+        "task:read",
+        "task:update",
+        "task:reassign",
+        "task:start",
+        "task:complete",
+        "task:cancel",
+        "task:manage_all",
+        "sla:read",
+        "sla:manage",
         "approval:decide",
         "audit:view",
         "department:read",
@@ -582,6 +620,121 @@ class Command(BaseCommand):
                     metadata={"priority": inc.priority, "status": inc.status},
                 )
             self.stdout.write(f"  • Incident: {inc.title} [{inc.status}] ({'created' if created else 'exists'})")
+
+        # 8. Seed SLA Policies (Phase 4)
+        self.stdout.write("Seeding SLA policies...")
+        sla_data = [
+            {
+                "name": "Critical Incident SLA",
+                "priority": IncidentPriority.CRITICAL,
+                "response_target": timedelta(minutes=15),
+                "resolution_target": timedelta(hours=2),
+            },
+            {
+                "name": "High Priority SLA",
+                "priority": IncidentPriority.HIGH,
+                "response_target": timedelta(minutes=30),
+                "resolution_target": timedelta(hours=4),
+            },
+            {
+                "name": "Medium Priority SLA",
+                "priority": IncidentPriority.MEDIUM,
+                "response_target": timedelta(hours=2),
+                "resolution_target": timedelta(hours=24),
+            },
+            {
+                "name": "Low Priority SLA",
+                "priority": IncidentPriority.LOW,
+                "response_target": timedelta(hours=4),
+                "resolution_target": timedelta(hours=48),
+            },
+        ]
+        for s_info in sla_data:
+            sla_obj, created = SLA.all_objects.get_or_create(
+                organization=org,
+                campus=eng_campus,
+                name=s_info["name"],
+                defaults={
+                    "priority": s_info["priority"],
+                    "response_target": s_info["response_target"],
+                    "resolution_target": s_info["resolution_target"],
+                    "active": True,
+                },
+            )
+            self.stdout.write(f"  • SLA: {sla_obj.name} ({'created' if created else 'exists'})")
+
+        # 9. Seed Operational Tasks (Phase 4)
+        self.stdout.write("Seeding operational tasks for North-Star Wi-Fi incident...")
+        wifi_inc = Incident.all_objects.filter(campus=eng_campus, title__icontains="Wi-Fi Access Point").first()
+        if wifi_inc:
+            tasks_data = [
+                {
+                    "title": "Inspect AP-204 PoE & Radio Status",
+                    "description": "Examine physical AP-204 unit in Room 101, verify PoE injector power lights and reboot radio module.",
+                    "task_type": TaskType.INSPECTION,
+                    "priority": IncidentPriority.HIGH,
+                    "status": TaskStatus.IN_PROGRESS,
+                    "assigned_user": user_objs.get("technician@apex.edu"),
+                    "assigned_department": dept_objs.get("IT"),
+                },
+                {
+                    "title": "Verify Network Connectivity & Gateway Ping",
+                    "description": "Run automated subnet ping and verify DNS resolution from student terminals in Room 101.",
+                    "task_type": TaskType.FOLLOW_UP,
+                    "priority": IncidentPriority.HIGH,
+                    "status": TaskStatus.PENDING,
+                    "assigned_user": None,
+                    "assigned_department": dept_objs.get("IT"),
+                },
+                {
+                    "title": "Confirm Student Resolution & Close Loop",
+                    "description": "Verify with student lab representatives that access to lab presentation servers has resumed.",
+                    "task_type": TaskType.COMMUNICATION,
+                    "priority": IncidentPriority.MEDIUM,
+                    "status": TaskStatus.PENDING,
+                    "assigned_user": None,
+                    "assigned_department": dept_objs.get("IT"),
+                },
+            ]
+
+            admin_user = user_objs.get("campus.admin@apex.edu") or user_objs.get("superadmin@apex.edu")
+
+            for t_info in tasks_data:
+                task_obj, created = Task.all_objects.get_or_create(
+                    organization=org,
+                    campus=eng_campus,
+                    incident=wifi_inc,
+                    title=t_info["title"],
+                    defaults={
+                        "description": t_info["description"],
+                        "task_type": t_info["task_type"],
+                        "priority": t_info["priority"],
+                        "status": t_info["status"],
+                        "assigned_user": t_info.get("assigned_user"),
+                        "assigned_department": t_info.get("assigned_department"),
+                        "created_by": admin_user,
+                    },
+                )
+                attach_sla_to_task(task_obj)
+                if created:
+                    TaskEvent.all_objects.create(
+                        organization=org,
+                        campus=eng_campus,
+                        task=task_obj,
+                        event_type=TaskEventType.CREATED,
+                        actor=admin_user,
+                        message=f"Task seeded: {task_obj.title}",
+                    )
+                    if task_obj.status == TaskStatus.IN_PROGRESS:
+                        TaskEvent.all_objects.create(
+                            organization=org,
+                            campus=eng_campus,
+                            task=task_obj,
+                            event_type=TaskEventType.STARTED,
+                            actor=task_obj.assigned_user,
+                            message="Technician on site, diagnostic tests initiated.",
+                        )
+                self.stdout.write(f"  • Task: {task_obj.title} [{task_obj.status}] ({'created' if created else 'exists'})")
 
         log_audit_event(
             action="system.seed_dev_data",

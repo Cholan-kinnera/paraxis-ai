@@ -1,6 +1,6 @@
 """
 URL configuration for Paraxis AI Core Platform.
-Exposes canonical Phase 1 APIs and health probe.
+Exposes canonical Phase 1-4 APIs and health probe.
 """
 from django.contrib import admin
 from django.urls import path
@@ -25,6 +25,18 @@ from core.views.incident import (
     IncidentListCreateView,
     IncidentDetailView,
     IncidentEventsTimelineView,
+)
+from core.views.sla import (
+    SLAListCreateView,
+)
+from core.views.task import (
+    TaskListCreateView,
+    TaskDetailView,
+    TaskEventsTimelineView,
+    TaskAssignView,
+    TaskStartView,
+    TaskCompleteView,
+    TaskCancelView,
 )
 
 urlpatterns = [
@@ -69,4 +81,16 @@ urlpatterns = [
     path("api/v1/incidents/", IncidentListCreateView.as_view(), name="incident_list_create"),
     path("api/v1/incidents/<uuid:pk>/", IncidentDetailView.as_view(), name="incident_detail"),
     path("api/v1/incidents/<uuid:pk>/events/", IncidentEventsTimelineView.as_view(), name="incident_events_timeline"),
+
+    # SLA Management (Phase 4)
+    path("api/v1/slas/", SLAListCreateView.as_view(), name="sla_list_create"),
+
+    # Task & Dispatch Management (Phase 4)
+    path("api/v1/tasks/", TaskListCreateView.as_view(), name="task_list_create"),
+    path("api/v1/tasks/<uuid:pk>/", TaskDetailView.as_view(), name="task_detail"),
+    path("api/v1/tasks/<uuid:pk>/events/", TaskEventsTimelineView.as_view(), name="task_events_timeline"),
+    path("api/v1/tasks/<uuid:pk>/assign/", TaskAssignView.as_view(), name="task_assign"),
+    path("api/v1/tasks/<uuid:pk>/start/", TaskStartView.as_view(), name="task_start"),
+    path("api/v1/tasks/<uuid:pk>/complete/", TaskCompleteView.as_view(), name="task_complete"),
+    path("api/v1/tasks/<uuid:pk>/cancel/", TaskCancelView.as_view(), name="task_cancel"),
 ]
