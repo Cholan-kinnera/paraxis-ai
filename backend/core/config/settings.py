@@ -80,6 +80,29 @@ POSTGRES_USER = os.getenv("POSTGRES_USER", "paraxis_user")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "paraxis_local_password")
 POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+POSTGRES_SSLMODE = os.getenv("POSTGRES_SSLMODE")
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL:
+    from urllib.parse import urlparse, parse_qs, unquote
+    parsed_url = urlparse(DATABASE_URL)
+    if parsed_url.path and parsed_url.path != "/":
+        POSTGRES_DB = parsed_url.path.lstrip("/")
+    if parsed_url.username:
+        POSTGRES_USER = unquote(parsed_url.username)
+    if parsed_url.password:
+        POSTGRES_PASSWORD = unquote(parsed_url.password)
+    if parsed_url.hostname:
+        POSTGRES_HOST = parsed_url.hostname
+    if parsed_url.port:
+        POSTGRES_PORT = str(parsed_url.port)
+    query_params = parse_qs(parsed_url.query)
+    if "sslmode" in query_params and query_params["sslmode"]:
+        POSTGRES_SSLMODE = query_params["sslmode"][0]
+
+db_options = {}
+if POSTGRES_SSLMODE:
+    db_options["sslmode"] = POSTGRES_SSLMODE
 
 DATABASES = {
     "default": {
@@ -90,6 +113,7 @@ DATABASES = {
         "HOST": POSTGRES_HOST,
         "PORT": POSTGRES_PORT,
         "CONN_MAX_AGE": 60,
+        "OPTIONS": db_options,
     }
 }
 
