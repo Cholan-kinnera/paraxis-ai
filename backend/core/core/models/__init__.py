@@ -19,6 +19,30 @@ from core.models.campus_graph import (
     AssetCategory,
     AssetStatus,
 )
+from core.models.incident import (
+    Incident,
+    IncidentEvent,
+    IncidentStatus,
+    IncidentPriority,
+    IncidentCategory,
+    IncidentSource,
+    IncidentEventType,
+    IncidentEventImmutableError,
+)
+from core.models.sla import (
+    SLA,
+    SLATracking,
+    SLAState,
+)
+from core.models.task import (
+    Task,
+    TaskEvent,
+    TaskStatus,
+    TaskType,
+    TaskEventType,
+    TaskEventImmutableError,
+    VALID_TASK_TRANSITIONS,
+)
 
 __all__ = [
     "TimeStampedModel",
@@ -46,4 +70,22 @@ __all__ = [
     "RoomStatus",
     "AssetCategory",
     "AssetStatus",
+    "Incident",
+    "IncidentEvent",
+    "IncidentStatus",
+    "IncidentPriority",
+    "IncidentCategory",
+    "IncidentSource",
+    "IncidentEventType",
+    "IncidentEventImmutableError",
+    "SLA",
+    "SLATracking",
+    "SLAState",
+    "Task",
+    "TaskEvent",
+    "TaskStatus",
+    "TaskType",
+    "TaskEventType",
+    "TaskEventImmutableError",
+    "VALID_TASK_TRANSITIONS",
 ]

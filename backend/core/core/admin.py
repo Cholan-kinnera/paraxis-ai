@@ -15,6 +15,8 @@ from core.models.campus_graph import (
     Room,
     Asset,
 )
+from core.models.incident import Incident, IncidentEvent
+
 
 
 @admin.register(Organization)
@@ -121,3 +123,40 @@ class AssetAdmin(admin.ModelAdmin):
     list_display = ("name", "asset_tag", "category", "department", "building", "room", "status")
     list_filter = ("category", "status", "department", "campus")
     search_fields = ("name", "asset_tag", "serial_number")
+
+
+@admin.register(Incident)
+class IncidentAdmin(admin.ModelAdmin):
+    list_display = ("title", "priority", "status", "category", "campus", "reporter", "created_at")
+    list_filter = ("status", "priority", "category", "campus", "department")
+    search_fields = ("title", "description", "reporter__email", "reporter__full_name")
+    readonly_fields = ("id", "created_at", "updated_at", "deleted_at")
+
+
+@admin.register(IncidentEvent)
+class IncidentEventAdmin(admin.ModelAdmin):
+    list_display = ("incident", "event_type", "actor", "actor_type", "created_at")
+    list_filter = ("event_type", "actor_type", "incident__campus")
+    search_fields = ("incident__title", "description")
+    readonly_fields = (
+        "id",
+        "organization",
+        "campus",
+        "incident",
+        "event_type",
+        "description",
+        "actor",
+        "actor_type",
+        "metadata",
+        "request_id",
+        "created_at",
+    )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

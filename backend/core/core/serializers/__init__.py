@@ -22,6 +22,10 @@ from core.serializers.campus_graph import (
     RoomSerializer,
     AssetSerializer,
 )
+from core.serializers.incident import (
+    IncidentSerializer,
+    IncidentEventSerializer,
+)
 
 __all__ = [
     "TokenObtainSerializer",
@@ -36,4 +40,6 @@ __all__ = [
     "FloorSerializer",
     "RoomSerializer",
     "AssetSerializer",
+    "IncidentSerializer",
+    "IncidentEventSerializer",
 ]

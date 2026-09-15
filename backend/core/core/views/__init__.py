@@ -19,6 +19,23 @@ from core.views.campus_graph import (
     AssetListCreateView,
     AssetDetailView,
 )
+from core.views.incident import (
+    IncidentListCreateView,
+    IncidentDetailView,
+    IncidentEventsTimelineView,
+)
+from core.views.sla import (
+    SLAListCreateView,
+)
+from core.views.task import (
+    TaskListCreateView,
+    TaskDetailView,
+    TaskEventsTimelineView,
+    TaskAssignView,
+    TaskStartView,
+    TaskCompleteView,
+    TaskCancelView,
+)
 
 __all__ = [
     "health_check",
@@ -40,4 +57,15 @@ __all__ = [
     "RoomDetailView",
     "AssetListCreateView",
     "AssetDetailView",
+    "IncidentListCreateView",
+    "IncidentDetailView",
+    "IncidentEventsTimelineView",
+    "SLAListCreateView",
+    "TaskListCreateView",
+    "TaskDetailView",
+    "TaskEventsTimelineView",
+    "TaskAssignView",
+    "TaskStartView",
+    "TaskCompleteView",
+    "TaskCancelView",
 ]

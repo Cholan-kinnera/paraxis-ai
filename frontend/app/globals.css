@@ -3,8 +3,72 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+
   body {
-    @apply bg-background text-foreground antialiased selection:bg-brand-primary/20 selection:text-brand-primary;
+    @apply bg-background text-foreground antialiased selection:bg-brand-cyan/20 selection:text-brand-cyan;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Custom minimal dark scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #030712;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(6, 182, 212, 0.4);
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background: rgba(11, 15, 25, 0.72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-panel-elevated {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .glow-cyan-subtle {
+    box-shadow: 0 0 40px -10px rgba(6, 182, 212, 0.15);
+  }
+
+  .glow-cyan-hero {
+    box-shadow: 0 0 100px -20px rgba(6, 182, 212, 0.25);
+  }
+
+  .border-glow-hover {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .border-glow-hover:hover {
+    border-color: rgba(6, 182, 212, 0.35);
+    box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

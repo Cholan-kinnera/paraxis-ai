@@ -20,7 +20,26 @@ from core.models.campus_graph import (
     AssetCategory,
     AssetStatus,
 )
+from core.models.incident import (
+    Incident,
+    IncidentEvent,
+    IncidentStatus,
+    IncidentPriority,
+    IncidentCategory,
+    IncidentEventType,
+)
+from datetime import timedelta
+from core.models.sla import SLA, SLATracking, SLAState
+from core.models.task import (
+    Task,
+    TaskEvent,
+    TaskStatus,
+    TaskType,
+    TaskEventType,
+)
+from core.services.sla import attach_sla_to_task
 from core.services.audit import log_audit_event
+
 
 DEV_PASSWORD = "DevPassword123!"
 
@@ -33,11 +52,19 @@ STANDARD_PERMISSIONS = [
     ("incident:manage_all", "Manage all campus incidents", "incident"),
     ("incident:escalate", "Escalate incident priority", "incident"),
     # Tasks
+    ("task:create", "Create operational tasks", "task"),
+    ("task:read", "View operational tasks", "task"),
+    ("task:update", "Update operational tasks", "task"),
+    ("task:cancel", "Cancel operational tasks", "task"),
     ("task:view_assigned", "View assigned tasks", "task"),
     ("task:acknowledge", "Acknowledge task assignment", "task"),
     ("task:start", "Start task work", "task"),
     ("task:complete", "Complete task work", "task"),
     ("task:reassign", "Reassign task to another technician", "task"),
+    ("task:manage_all", "Manage all campus tasks", "task"),
+    # SLAs
+    ("sla:read", "View SLA policies", "governance"),
+    ("sla:manage", "Manage SLA policies", "governance"),
     # Assets & Facilities
     ("asset:view", "View campus assets", "facility"),
     ("hostel:view_queue", "View hostel maintenance queue", "facility"),
@@ -103,6 +130,7 @@ ROLE_PERMISSIONS_MAP = {
         "department:read",
     ],
     "TECHNICIAN": [
+        "task:read",
         "task:view_assigned",
         "task:acknowledge",
         "task:start",
@@ -133,7 +161,16 @@ ROLE_PERMISSIONS_MAP = {
     ],
     "CAMPUS_ADMIN": [
         "incident:manage_all",
+        "task:create",
+        "task:read",
+        "task:update",
         "task:reassign",
+        "task:start",
+        "task:complete",
+        "task:cancel",
+        "task:manage_all",
+        "sla:read",
+        "sla:manage",
         "approval:decide",
         "policy:manage",
         "audit:view",
@@ -165,6 +202,16 @@ ROLE_PERMISSIONS_MAP = {
         "system:configure",
         "audit:export_all",
         "incident:manage_all",
+        "task:create",
+        "task:read",
+        "task:update",
+        "task:reassign",
+        "task:start",
+        "task:complete",
+        "task:cancel",
+        "task:manage_all",
+        "sla:read",
+        "sla:manage",
         "approval:decide",
         "audit:view",
         "department:read",
@@ -320,6 +367,7 @@ class Command(BaseCommand):
             },
         ]
 
+        user_objs = {}
         for u_data in dev_users_data:
             user = User.objects.filter(organization=org, email=u_data["email"]).first()
             if not user:
@@ -345,6 +393,7 @@ class Command(BaseCommand):
             # Assign roles
             assigned_roles = [role_objs[r] for r in u_data["roles"] if r in role_objs]
             user.roles.set(assigned_roles)
+            user_objs[user.email] = user
 
         # 5. Campus Operational Graph (Departments, Buildings, Floors, Rooms, Assets)
         self.stdout.write(self.style.NOTICE("📍 Provisioning Campus Operational Graph..."))
@@ -497,6 +546,196 @@ class Command(BaseCommand):
             )
             self.stdout.write(f"  • Asset: {asset.name} [{asset.asset_tag}] ({'created' if created else 'exists'})")
 
+        # 7. Seed Operational Incidents (Phase 3)
+        self.stdout.write("Seeding operational incidents...")
+        incidents_data = [
+            {
+                "title": "Hardware Systems Lab Wi-Fi Access Point Offline",
+                "description": "The Cisco AP in Room 101 has lost connection. Several students in the lab are unable to access lab servers.",
+                "category": IncidentCategory.IT_NETWORK,
+                "priority": IncidentPriority.HIGH,
+                "status": IncidentStatus.IN_PROGRESS,
+                "reporter": user_objs.get("student.eng@apex.edu"),
+                "department": dept_objs.get("IT"),
+                "assigned_to": user_objs.get("technician@apex.edu"),
+                "building": eng_bldg,
+                "room": room_objs.get("101"),
+                "asset": Asset.all_objects.filter(campus=eng_campus, asset_tag="AST-AP-101").first(),
+            },
+            {
+                "title": "Split AC in Hardware Lab Blowing Warm Air",
+                "description": "The Daikin 2-ton split AC is blowing ambient air instead of cooling. Ambient lab temperature rising.",
+                "category": IncidentCategory.HVAC,
+                "priority": IncidentPriority.MEDIUM,
+                "status": IncidentStatus.ASSIGNED,
+                "reporter": user_objs.get("faculty@apex.edu"),
+                "department": dept_objs.get("FACILITIES"),
+                "building": eng_bldg,
+                "room": room_objs.get("101"),
+                "asset": Asset.all_objects.filter(campus=eng_campus, asset_tag="AST-AC-101").first(),
+            },
+            {
+                "title": "Corridor Light Flickering Near Server Room Entrance",
+                "description": "Fluorescent fixture outside server room 001 is flickering rapidly, causing a visual hazard.",
+                "category": IncidentCategory.ELECTRICAL,
+                "priority": IncidentPriority.LOW,
+                "status": IncidentStatus.INGESTED,
+                "reporter": user_objs.get("student.eng@apex.edu"),
+                "department": dept_objs.get("ELECTRICAL"),
+                "building": eng_bldg,
+                "room": room_objs.get("001"),
+            },
+        ]
+
+        for inc_info in incidents_data:
+            rm = inc_info.get("room")
+            fl = rm.floor if rm else None
+            bld = rm.building if rm else inc_info.get("building")
+            inc, created = Incident.all_objects.get_or_create(
+                organization=org,
+                campus=eng_campus,
+                title=inc_info["title"],
+                defaults={
+                    "description": inc_info["description"],
+                    "category": inc_info["category"],
+                    "priority": inc_info["priority"],
+                    "status": inc_info["status"],
+                    "reporter": inc_info["reporter"],
+                    "department": inc_info.get("department"),
+                    "assigned_to": inc_info.get("assigned_to"),
+                    "building": bld,
+                    "floor": fl,
+                    "room": rm,
+                    "asset": inc_info.get("asset"),
+                },
+            )
+            if created:
+                IncidentEvent.objects.create(
+                    organization=org,
+                    campus=eng_campus,
+                    incident=inc,
+                    event_type=IncidentEventType.REPORTED,
+                    description=f"Incident reported: {inc.title}",
+                    actor=inc.reporter,
+                    metadata={"priority": inc.priority, "status": inc.status},
+                )
+            self.stdout.write(f"  • Incident: {inc.title} [{inc.status}] ({'created' if created else 'exists'})")
+
+        # 8. Seed SLA Policies (Phase 4)
+        self.stdout.write("Seeding SLA policies...")
+        sla_data = [
+            {
+                "name": "Critical Incident SLA",
+                "priority": IncidentPriority.CRITICAL,
+                "response_target": timedelta(minutes=15),
+                "resolution_target": timedelta(hours=2),
+            },
+            {
+                "name": "High Priority SLA",
+                "priority": IncidentPriority.HIGH,
+                "response_target": timedelta(minutes=30),
+                "resolution_target": timedelta(hours=4),
+            },
+            {
+                "name": "Medium Priority SLA",
+                "priority": IncidentPriority.MEDIUM,
+                "response_target": timedelta(hours=2),
+                "resolution_target": timedelta(hours=24),
+            },
+            {
+                "name": "Low Priority SLA",
+                "priority": IncidentPriority.LOW,
+                "response_target": timedelta(hours=4),
+                "resolution_target": timedelta(hours=48),
+            },
+        ]
+        for s_info in sla_data:
+            sla_obj, created = SLA.all_objects.get_or_create(
+                organization=org,
+                campus=eng_campus,
+                name=s_info["name"],
+                defaults={
+                    "priority": s_info["priority"],
+                    "response_target": s_info["response_target"],
+                    "resolution_target": s_info["resolution_target"],
+                    "active": True,
+                },
+            )
+            self.stdout.write(f"  • SLA: {sla_obj.name} ({'created' if created else 'exists'})")
+
+        # 9. Seed Operational Tasks (Phase 4)
+        self.stdout.write("Seeding operational tasks for North-Star Wi-Fi incident...")
+        wifi_inc = Incident.all_objects.filter(campus=eng_campus, title__icontains="Wi-Fi Access Point").first()
+        if wifi_inc:
+            tasks_data = [
+                {
+                    "title": "Inspect AP-204 PoE & Radio Status",
+                    "description": "Examine physical AP-204 unit in Room 101, verify PoE injector power lights and reboot radio module.",
+                    "task_type": TaskType.INSPECTION,
+                    "priority": IncidentPriority.HIGH,
+                    "status": TaskStatus.IN_PROGRESS,
+                    "assigned_user": user_objs.get("technician@apex.edu"),
+                    "assigned_department": dept_objs.get("IT"),
+                },
+                {
+                    "title": "Verify Network Connectivity & Gateway Ping",
+                    "description": "Run automated subnet ping and verify DNS resolution from student terminals in Room 101.",
+                    "task_type": TaskType.FOLLOW_UP,
+                    "priority": IncidentPriority.HIGH,
+                    "status": TaskStatus.PENDING,
+                    "assigned_user": None,
+                    "assigned_department": dept_objs.get("IT"),
+                },
+                {
+                    "title": "Confirm Student Resolution & Close Loop",
+                    "description": "Verify with student lab representatives that access to lab presentation servers has resumed.",
+                    "task_type": TaskType.COMMUNICATION,
+                    "priority": IncidentPriority.MEDIUM,
+                    "status": TaskStatus.PENDING,
+                    "assigned_user": None,
+                    "assigned_department": dept_objs.get("IT"),
+                },
+            ]
+
+            admin_user = user_objs.get("campus.admin@apex.edu") or user_objs.get("superadmin@apex.edu")
+
+            for t_info in tasks_data:
+                task_obj, created = Task.all_objects.get_or_create(
+                    organization=org,
+                    campus=eng_campus,
+                    incident=wifi_inc,
+                    title=t_info["title"],
+                    defaults={
+                        "description": t_info["description"],
+                        "task_type": t_info["task_type"],
+                        "priority": t_info["priority"],
+                        "status": t_info["status"],
+                        "assigned_user": t_info.get("assigned_user"),
+                        "assigned_department": t_info.get("assigned_department"),
+                        "created_by": admin_user,
+                    },
+                )
+                attach_sla_to_task(task_obj)
+                if created:
+                    TaskEvent.all_objects.create(
+                        organization=org,
+                        campus=eng_campus,
+                        task=task_obj,
+                        event_type=TaskEventType.CREATED,
+                        actor=admin_user,
+                        message=f"Task seeded: {task_obj.title}",
+                    )
+                    if task_obj.status == TaskStatus.IN_PROGRESS:
+                        TaskEvent.all_objects.create(
+                            organization=org,
+                            campus=eng_campus,
+                            task=task_obj,
+                            event_type=TaskEventType.STARTED,
+                            actor=task_obj.assigned_user,
+                            message="Technician on site, diagnostic tests initiated.",
+                        )
+                self.stdout.write(f"  • Task: {task_obj.title} [{task_obj.status}] ({'created' if created else 'exists'})")
+
         log_audit_event(
             action="system.seed_dev_data",
             entity_type="System",
@@ -504,7 +743,7 @@ class Command(BaseCommand):
             actor=None,
             actor_type="SYSTEM",
             organization=org,
-            post_state={"status": "complete", "users_seeded": len(dev_users_data), "assets_seeded": len(assets_data)},
+            post_state={"status": "complete", "users_seeded": len(dev_users_data), "assets_seeded": len(assets_data), "incidents_seeded": len(incidents_data)},
         )
 
         self.stdout.write(self.style.SUCCESS("✅ Development seed data successfully provisioned!"))

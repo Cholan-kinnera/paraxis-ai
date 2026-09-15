@@ -9,14 +9,21 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "#090D16",
-        card: "#0F172A",
-        "card-hover": "#1E293B",
-        border: "#1E293B",
-        foreground: "#F8FAFC",
+        background: "#030712",
+        "background-depth": "#05070B",
+        card: "#0B0F19",
+        "card-elevated": "#0F172A",
+        "card-hover": "#131C31",
+        border: "rgba(255, 255, 255, 0.08)",
+        "border-glow": "rgba(6, 182, 212, 0.35)",
+        foreground: "#FFFFFF",
         "muted-foreground": "#94A3B8",
+        "subtle-foreground": "#64748B",
         brand: {
-          primary: "#3B82F6",
+          primary: "#06B6D4",
+          cyan: "#00E5FF",
+          cobalt: "#1E40AF",
+          accent: "#38BDF8",
         },
         status: {
           operational: "#10B981",
@@ -26,7 +33,18 @@ module.exports = {
         },
       },
       fontFamily: {
-        mono: ["JetBrains Mono", "monospace"],
+        sans: ["var(--font-sans)", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+        mono: ["var(--font-mono)", "JetBrains Mono", "monospace"],
+      },
+      animation: {
+        "pulse-subtle": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "glow-slow": "glow 8s ease-in-out infinite alternate",
+      },
+      keyframes: {
+        glow: {
+          "0%": { opacity: "0.4" },
+          "100%": { opacity: "0.8" },
+        },
       },
     },
   },
