@@ -91,3 +91,4 @@ Thumbs.db
 scratch/
 tmp/
 *.tmp
+*.tsbuildinfo

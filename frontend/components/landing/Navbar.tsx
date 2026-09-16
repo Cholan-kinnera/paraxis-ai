@@ -1,113 +1,33 @@
 "use client";
-
-import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { PillButton } from "./ui/PillButton";
-import { StatusBadge } from "./ui/StatusBadge";
-import { Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Menu, X, ArrowUpRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Logo } from "@/components/Logo";
+
+const links = [{ href: "#product", label: "Product" }, { href: "#platform", label: "Platform" }, { href: "#pricing", label: "Pricing" }];
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const navLinks = [
-    { label: "Platform", href: "#command-center" },
-    { label: "Graph", href: "#operational-graph" },
-    { label: "Pillars", href: "#capabilities" },
-    { label: "Workflow", href: "#workflow" },
-    { label: "Governance", href: "#governance" },
-  ];
-
+  const [open, setOpen] = useState(false);
+  useEffect(() => { const f = () => setScrolled(window.scrollY > 24); f(); window.addEventListener("scroll", f, { passive: true }); return () => window.removeEventListener("scroll", f); }, []);
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4 sm:pt-6 transition-all duration-300">
-      <nav
-        aria-label="Main Navigation"
-        className={`w-full max-w-6xl flex items-center justify-between px-4 sm:px-6 py-2.5 rounded-full border transition-all duration-300 ${
-          scrolled
-            ? "bg-[#030712]/90 backdrop-blur-xl border-white/[0.12] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.8)]"
-            : "bg-[#0B0F19]/60 backdrop-blur-lg border-white/[0.08]"
-        }`}
-      >
-        {/* Brand mark */}
-        <Link href="#" className="flex items-center gap-2.5 group focus:outline-none">
-          <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-brand-cyan/20 to-brand-cobalt/40 border border-brand-cyan/40 flex items-center justify-center text-xs font-mono font-bold text-white group-hover:border-brand-cyan transition-colors">
-            PX
-          </div>
-          <span className="font-semibold tracking-wider text-sm text-white flex items-center gap-1.5">
-            PARAXIS <span className="text-brand-cyan text-xs font-mono">AI</span>
-          </span>
-        </Link>
-
-        {/* Center links (Desktop) */}
-        <div className="hidden md:flex items-center gap-1 lg:gap-2">
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className="text-xs lg:text-sm text-slate-300 hover:text-white px-3 py-1.5 rounded-full hover:bg-white/[0.06] transition-colors font-medium"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
-
-        {/* Right CTA */}
-        <div className="hidden sm:flex items-center gap-3">
-          <StatusBadge variant="operational" pulse={true} className="hidden lg:inline-flex">
-            Live Console
-          </StatusBadge>
-          <PillButton href="#command-center" variant="primary" size="sm" icon={true}>
-            Explore Console
-          </PillButton>
-        </div>
-
-        {/* Mobile menu button */}
-        <div className="flex sm:hidden items-center gap-2">
-          <PillButton href="#command-center" variant="primary" size="sm" icon={false}>
-            Console
-          </PillButton>
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-full text-slate-300 hover:text-white hover:bg-white/[0.08] focus:outline-none min-h-[44px] min-w-[44px] flex items-center justify-center"
-            aria-label="Toggle navigation menu"
-            aria-expanded={mobileMenuOpen}
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile Navigation Dropdown */}
-      {mobileMenuOpen && (
-        <div
-          className="sm:hidden fixed inset-x-4 top-20 bg-[#0B0F19]/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-5 shadow-2xl flex flex-col gap-3"
-          role="dialog"
-          aria-label="Mobile menu"
-        >
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm text-slate-200 hover:text-brand-cyan py-2.5 px-3 rounded-lg hover:bg-white/[0.05] transition-colors"
-            >
-              {link.label}
-            </Link>
-          ))}
-          <div className="pt-2 border-t border-white/10 flex justify-between items-center">
-            <StatusBadge variant="operational">Operations Active</StatusBadge>
-            <PillButton href="#command-center" variant="primary" size="sm" onClick={() => setMobileMenuOpen(false)}>
-              Explore Console ↗
-            </PillButton>
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 px-gutter pt-fl-s">
+      <div className="relative mx-auto flex max-w-container items-center justify-between">
+        <Link href="/" className="pointer-events-auto flex items-center gap-2.5 text-white"><Logo className="h-[1.6rem] w-[1.6rem]" /><span className="text-f-0 font-semibold tracking-tight">Paraxis<span className="text-white/50"> AI</span></span></Link>
+        <nav className={cn("pointer-events-auto absolute left-1/2 hidden -translate-x-1/2 items-center rounded-full p-1 pl-2 transition-all duration-500 md:flex", scrolled ? "glass-strong" : "bg-white/[0.02]")}>
+          {links.map((l) => <a key={l.href} href={l.href} className="rounded-full px-fl-s py-[0.55rem] text-f--1 text-white/70 transition-colors hover:text-white">{l.label}</a>)}
+          <Link href="/login" className="group ml-1 inline-flex items-center gap-2 rounded-full bg-white py-[0.4rem] pl-4 pr-1.5 text-f--1 font-medium text-black">Get Started<span className="grid h-6 w-6 place-items-center rounded-full bg-black text-white transition-transform group-hover:rotate-45"><ArrowUpRight className="h-3 w-3" strokeWidth={2.4} /></span></Link>
+        </nav>
+        <Link href="/login" className="pointer-events-auto hidden text-f--1 text-white/70 transition-colors hover:text-white md:block">Sign in</Link>
+        <button onClick={() => setOpen((o) => !o)} aria-label="Menu" className="pointer-events-auto grid h-10 w-10 place-items-center rounded-full glass text-white md:hidden">{open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}</button>
+      </div>
+      {open && (
+        <div className="pointer-events-auto mx-auto mt-3 max-w-container rounded-[1.5rem] glass-strong p-3 md:hidden">
+          {links.map((l) => <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block rounded-2xl px-4 py-3 text-f-0 text-white/80">{l.label}</a>)}
+          <div className="mt-2 grid grid-cols-2 gap-2 border-t border-white/10 pt-3">
+            <Link href="/login" className="rounded-full glass py-3 text-center text-f--1 text-white">Sign in</Link>
+            <Link href="/login" className="rounded-full bg-white py-3 text-center text-f--1 font-medium text-black">Get Started</Link>
           </div>
         </div>
       )}

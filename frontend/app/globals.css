@@ -2,73 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fluid rem architecture — every size derives from the viewport between 22.5rem (360px) and 100rem (1600px). */
+:root {
+  --gutter: clamp(1rem, 0.4rem + 2.6vw, 3rem);
+  --container: min(80rem, 100% - 2 * var(--gutter));
+  --step--2: clamp(0.6875rem, 0.66rem + 0.12vw, 0.75rem);
+  --step--1: clamp(0.8125rem, 0.78rem + 0.15vw, 0.9rem);
+  --step-0: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
+  --step-1: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  --step-2: clamp(1.25rem, 1.1rem + 0.7vw, 1.6rem);
+  --step-3: clamp(1.5rem, 1.2rem + 1.3vw, 2.25rem);
+  --step-4: clamp(2rem, 1.4rem + 2.6vw, 3.4rem);
+  --step-5: clamp(2.5rem, 1.5rem + 4.4vw, 5rem);
+  --step-6: clamp(3rem, 1.4rem + 7vw, 7.5rem);
+  --step-7: clamp(3.4rem, 1rem + 10.5vw, 10.5rem);
+  --space-3xs: clamp(0.25rem, 0.23rem + 0.1vw, 0.3125rem);
+  --space-2xs: clamp(0.5rem, 0.46rem + 0.2vw, 0.625rem);
+  --space-xs: clamp(0.75rem, 0.68rem + 0.3vw, 0.9375rem);
+  --space-s: clamp(1rem, 0.9rem + 0.4vw, 1.25rem);
+  --space-m: clamp(1.5rem, 1.35rem + 0.65vw, 1.9rem);
+  --space-l: clamp(2rem, 1.8rem + 0.9vw, 2.5rem);
+  --space-xl: clamp(3rem, 2.6rem + 1.6vw, 4rem);
+  --space-2xl: clamp(4rem, 3.4rem + 2.6vw, 5.6rem);
+  --space-3xl: clamp(6rem, 4.6rem + 5.5vw, 9.5rem);
+}
+
 @layer base {
-  html {
-    scroll-behavior: smooth;
-    color-scheme: dark;
-  }
-
-  body {
-    @apply bg-background text-foreground antialiased selection:bg-brand-cyan/20 selection:text-brand-cyan;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  }
-
-  /* Custom minimal dark scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: #030712;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 9999px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(6, 182, 212, 0.4);
-  }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01"; }
+  ::selection { background: rgba(255,255,255,0.9); color: #000; }
+  .theme-light ::selection { background: #000; color: #fff; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: rgba(127,127,127,0.35); border-radius: 999px; }
+  ::-webkit-scrollbar-track { background: transparent; }
 }
 
 @layer utilities {
-  .glass-panel {
-    background: rgba(11, 15, 25, 0.72);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .glass-panel-elevated {
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  .glow-cyan-subtle {
-    box-shadow: 0 0 40px -10px rgba(6, 182, 212, 0.15);
-  }
-
-  .glow-cyan-hero {
-    box-shadow: 0 0 100px -20px rgba(6, 182, 212, 0.25);
-  }
-
-  .border-glow-hover {
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  .border-glow-hover:hover {
-    border-color: rgba(6, 182, 212, 0.35);
-    box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.12);
-  }
+  /* Landing: frosted glass on black */
+  .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.10); }
+  .glass-strong { background: rgba(255,255,255,0.05); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); border: 1px solid rgba(255,255,255,0.14); }
+  .hairline { border-color: rgba(255,255,255,0.10); }
+  .text-balance { text-wrap: balance; }
+  .mask-fade-x { -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent); }
+  .mask-fade-b { -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent); mask-image: linear-gradient(to bottom, #000 60%, transparent); }
+  .grid-lines { background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 48px 48px; }
+  .noise::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: 0.035; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .shine { background: linear-gradient(110deg, rgba(255,255,255,0.0) 30%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.0) 70%); background-size: 200% 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+  *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }

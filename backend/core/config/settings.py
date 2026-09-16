@@ -163,3 +163,7 @@ CORS_ALLOWED_ORIGINS = [
     if origin.strip()
 ]
 CORS_ALLOW_CREDENTIALS = True
+# Correlation headers required by AGENTS.md §6 must survive browser preflight.
+from corsheaders.defaults import default_headers  # noqa: E402
+CORS_ALLOW_HEADERS = [*default_headers, "x-request-id", "x-trace-id", "x-tenant-id", "x-agent-run-id", "x-tool-call-id"]
+CORS_EXPOSE_HEADERS = ["X-Request-ID", "X-Trace-ID"]
