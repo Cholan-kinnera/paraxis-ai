@@ -1,50 +1,43 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class"],
-  content: [
-    "./app/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "../../packages/ui/**/*.{ts,tsx}",
-  ],
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        background: "#030712",
-        "background-depth": "#05070B",
-        card: "#0B0F19",
-        "card-elevated": "#0F172A",
-        "card-hover": "#131C31",
-        border: "rgba(255, 255, 255, 0.08)",
-        "border-glow": "rgba(6, 182, 212, 0.35)",
-        foreground: "#FFFFFF",
-        "muted-foreground": "#94A3B8",
-        "subtle-foreground": "#64748B",
-        brand: {
-          primary: "#06B6D4",
-          cyan: "#00E5FF",
-          cobalt: "#1E40AF",
-          accent: "#38BDF8",
-        },
+        ink: "#000000",
+        paper: "#FFFFFF",
         status: {
-          operational: "#10B981",
-          triaging: "#F59E0B",
-          critical: "#EF4444",
-          agent: "#06B6D4",
+          ok: "#16A34A",
+          warn: "#D97706",
+          critical: "#DC2626",
+          agent: "#2563EB",
         },
       },
       fontFamily: {
-        sans: ["var(--font-sans)", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
-        mono: ["var(--font-mono)", "JetBrains Mono", "monospace"],
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+      },
+      letterSpacing: { tightest: "-0.05em" },
+      fontSize: {
+        "f--2": ["var(--step--2)", "1.4"], "f--1": ["var(--step--1)", "1.5"], "f-0": ["var(--step-0)", "1.6"], "f-1": ["var(--step-1)", "1.55"],
+        "f-2": ["var(--step-2)", "1.3"], "f-3": ["var(--step-3)", "1.15"], "f-4": ["var(--step-4)", "1.05"], "f-5": ["var(--step-5)", "1.0"],
+        "f-6": ["var(--step-6)", "0.96"], "f-7": ["var(--step-7)", "0.92"],
+      },
+      spacing: {
+        "fl-3xs": "var(--space-3xs)", "fl-2xs": "var(--space-2xs)", "fl-xs": "var(--space-xs)", "fl-s": "var(--space-s)", "fl-m": "var(--space-m)",
+        "fl-l": "var(--space-l)", "fl-xl": "var(--space-xl)", "fl-2xl": "var(--space-2xl)", "fl-3xl": "var(--space-3xl)", gutter: "var(--gutter)",
+      },
+      maxWidth: { container: "var(--container)" },
+      keyframes: {
+        marquee: { "0%": { transform: "translateX(0)" }, "100%": { transform: "translateX(-50%)" } },
+        rise: { "0%": { opacity: "0", transform: "translateY(24px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
+        shimmer: { "0%": { backgroundPosition: "200% 0" }, "100%": { backgroundPosition: "-200% 0" } },
       },
       animation: {
-        "pulse-subtle": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "glow-slow": "glow 8s ease-in-out infinite alternate",
-      },
-      keyframes: {
-        glow: {
-          "0%": { opacity: "0.4" },
-          "100%": { opacity: "0.8" },
-        },
+        marquee: "marquee 40s linear infinite",
+        rise: "rise 0.9s cubic-bezier(0.16,1,0.3,1) both",
+        shimmer: "shimmer 2.4s linear infinite",
       },
     },
   },

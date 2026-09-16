@@ -43,8 +43,8 @@ make verify-foundation
   ```
 - **Intelligence Backend (FastAPI)**:
   ```bash
-  cd backend/intelligence
-  uvicorn main:app --port 8001 --reload
+  # from the repository root — the service imports as the `backend.intelligence` package
+  uvicorn backend.intelligence.main:app --port 8001 --reload
   ```
 - **Web Frontend (Next.js)**:
   ```bash
